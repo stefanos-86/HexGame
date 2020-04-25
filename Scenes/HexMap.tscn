@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
+[ext_resource path="res://Units/Tank.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Scenes/Control.gd" type="Script" id=3]
+
+[node name="HexMap" type="Node2D"]
+
+[node name="Terrain" type="TileMap" parent="."]
+tile_set = ExtResource( 1 )
+cell_size = Vector2( 32, 91 )
+cell_half_offset = 1
+cell_tile_origin = 1
+centered_textures = true
+format = 1
+tile_data = PoolIntArray( 65539, 1, 0, 65541, 1, 0, 65543, 1, 0, 65545, 1, 0, 131073, 1, 0, 131074, 1, 0, 131075, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131079, 0, 0, 131080, 0, 0, 131081, 0, 0, 131082, 1, 0, 131083, 1, 0, 196610, 1, 0, 196611, 1, 0, 196612, 0, 0, 196613, 0, 0, 196614, 0, 0, 196615, 0, 0, 196616, 0, 0, 196617, 1, 0, 196618, 1, 0, 196620, 0, 0, 262148, 1, 0, 262150, 1, 0, 262152, 1, 0 )
+
+[node name="Units" type="Node" parent="."]
+
+[node name="Tank" parent="Units" instance=ExtResource( 2 )]
+position = Vector2( 208.107, 228.785 )
+
+[node name="Control" type="Control" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CursorPosition" type="Label" parent="Control"]
+margin_right = 40.0
+margin_bottom = 14.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

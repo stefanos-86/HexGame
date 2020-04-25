@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Units/Tank_turret.png" type="Texture" id=1]
+[ext_resource path="res://Units/Tank_hull.png" type="Texture" id=2]
+
+[node name="Tank" type="Node2D"]
+
+[node name="Tank_hull" type="Sprite" parent="."]
+texture = ExtResource( 2 )
+
+[node name="Tank_turret" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+offset = Vector2( 0, -3 )
