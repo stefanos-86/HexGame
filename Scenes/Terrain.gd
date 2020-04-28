@@ -1,10 +1,31 @@
 extends TileMap
 
 # This class responsability is to know where things are
-# and to help with coordinates.
+# and to help with coordinates. 
+#
+# It also handles the terrain stats, but this will likely be moved to
+# something more sophisticated in the future.
 
-signal tile_hovering(tile_position)
+class TerrainStats:
+  const impassable = -1
+  var base_movement_cost
+  
+  func _init(movement_cost):
+    base_movement_cost = movement_cost
+  
+# The keys are the tiles indexes.
+var tiles_db = {
+  0: TerrainStats.new(1), # Open terrain costs 1 movement point.
+  1: TerrainStats.new(TerrainStats.impassable)  # Water is impassable.
+ }
 
+# I am not sure if this can easily handle the complex movement
+# I would like to implement in the future (e. g. cells passable
+# to certain units but not others, cost that varies if the map changes,
+# like on broken up terrain, or with deployable bridges).
+var navigation = AStar2D.new()
+var positions_id = {}
+  
 # Keep track of what is at every cell.
 var units_on_map = {}
 
@@ -12,6 +33,9 @@ var units_on_map = {}
 # left corner of the cell even if I set the origin in 
 # the center. This offset corrects for it.
 var half_cell = cell_size / 2
+
+func _ready():
+  fill_navigation_info()
 
 # Set the object at the given position and tells you
 # where in the world it ended up.
@@ -27,7 +51,6 @@ func cell_to_world(cell_coordinates):
 func detect_cell_under_mouse(mouse_pos):
   var map_coordinate = world_to_map(mouse_pos)
   var tile_pos = map_to_world(map_coordinate)
-  print ("mouse ", mouse_pos, " map ", map_coordinate, " tile ", tile_pos)
   
   # Bring stuff in the usual circle centered in the origin.
   # Hex texture is 64 pixels. Hex radius must be 32.
@@ -45,13 +68,6 @@ func detect_cell_under_mouse(mouse_pos):
   var inside_bottom_rigth =     px_half + py_sqrt3_half + sqrt3_half > 0
   var inside_bottom_left =    - px_half - py_sqrt3_half - sqrt3_half < 0
   var inside_top_left    =      px_half - py_sqrt3_half + sqrt3_half > 0
-  
-  print ("mouse origin ", mouse_if_tile_in_origin)
-  print ("mouse scaled ", mouse_if_hex_side_unity)
-  print ("tr ", inside_top_right)
-  print ("br ", inside_bottom_rigth)
-  print ("bl ", inside_bottom_left)
-  print ("tl ", inside_top_left)
   
   var even_x = (int(map_coordinate.x) % 2) == 0
   
@@ -73,11 +89,87 @@ func detect_cell_under_mouse(mouse_pos):
       if (even_x):
         map_coordinate.y -= 1
     # else, we are inside the tile that was it.
-  print ("At the end ", map_coordinate)
-  print (get_cellv(map_coordinate))
-  emit_signal("tile_hovering", map_coordinate, cell_to_world(map_coordinate))
+  
+  return map_coordinate
 
 func what_is_at(cell_coordinates):
   if (units_on_map.has(cell_coordinates)):
     return units_on_map[cell_coordinates]
+  return null
+
+
+func fill_navigation_info():
+  var max_map_size = 30
+  var cell_id = 0
+  for i in range(0, max_map_size):
+    for j in range(0, max_map_size):
+      var map_coordinate = Vector2(i, j)
+      var movement_cost = movement_cost_for_position(map_coordinate)
+      if (movement_cost != TerrainStats.impassable):
+        navigation.add_point(cell_id, map_coordinate, movement_cost)
+        positions_id[map_coordinate] = cell_id
+        print ("Point: ", cell_id, " at ", map_coordinate)
+        cell_id += 1
+          
+  for i in range(0, max_map_size):
+    for j in range(0, max_map_size):
+      var map_coordinate = Vector2(i, j)
+      var movement_cost = movement_cost_for_position(map_coordinate)
+      if (movement_cost != TerrainStats.impassable):
+        var near = neighbors_of(map_coordinate)
+        for n in near:
+          var neighbor_cost = movement_cost_for_position(n)
+          if (neighbor_cost != TerrainStats.impassable):
+            var start = positions_id[map_coordinate]
+            var end = positions_id[n]
+            navigation.connect_points(start, end)
+            print ("Connection a ", start, " - ", end)
+        
+          
+func movement_cost_for_position(map_coordinate):
+  var tile_terrain_type = get_cellv(map_coordinate) 
+  if (tile_terrain_type < 0):
+    return -1 # No terrain here. Impassable.
+    
+  return tiles_db[tile_terrain_type].base_movement_cost
+  
+func neighbors_of(map_coordinate):
+  var x = map_coordinate.x
+  var y = map_coordinate.y
+  if (int(x) % 2 == 0):
+    return [
+        Vector2(x -1, y -1), Vector2(x +1, y -1),
+      Vector2(x -2, y),         Vector2(x +2, y),
+        Vector2(x -1, y), Vector2(x +1, y),
+    ] 
+  else:
+    return [
+        Vector2(x -1, y), Vector2(x +1, y),
+      Vector2(x -2, y),         Vector2(x +2, y),
+        Vector2(x -1, y +1), Vector2(x +1, y +1),
+    ]
+
+  
+func plot_unit_path(unit, destination_coordinate):
+  if (movement_cost_for_position(destination_coordinate) == TerrainStats.impassable):
+    print ("destination impassable")
+    return []
+    
+  var start_coordinate = where_is(unit)
+  print (start_coordinate)
+  if (start_coordinate == null):
+    return []  # TODO: handle error in a decent way.
+    
+  var start = positions_id[start_coordinate]
+  var end = positions_id[destination_coordinate]
+  
+  var path = navigation.get_point_path(start, end)
+  print (start, " ", end)
+  print(path)
+  return path
+
+func where_is(something):
+  for coordinate in units_on_map:
+    if (units_on_map[coordinate] == something):
+      return coordinate
   return null

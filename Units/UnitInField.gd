@@ -1,5 +1,8 @@
 extends Node2D
 
-# Game-specific data attached to this unit.
+# Data that "instantiates" a unit on the field.
 
-# For now, nothing. One day, ammunition, fuel, damage...
+var unit_name : String
+var faction
+
+

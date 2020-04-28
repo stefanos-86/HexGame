@@ -1,7 +1,11 @@
-[gd_resource type="TileSet" load_steps=5 format=2]
+[gd_resource type="TileSet" load_steps=6 format=2]
 
 [ext_resource path="res://Tiles/Grass.png" type="Texture" id=1]
 [ext_resource path="res://Tiles/Water.png" type="Texture" id=2]
+
+[sub_resource type="NavigationPolygon" id=3]
+vertices = PoolVector2Array( 0, 14.9237, 31.9289, 0, 63.9566, 15.4662, 63.9566, 48.8978, 32.0948, 64, 0, 48.6653 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5 ) ]
 
 [sub_resource type="ConvexPolygonShape2D" id=1]
 points = PoolVector2Array( 32.056, 0, 63.8403, 15.2433, 63.9566, 48.4175, 31.3971, 63.767, 0, 48.0935, 0, 15.858 )
@@ -18,6 +22,7 @@ points = PoolVector2Array( 31.8299, 0.174843, 63.6465, 16.3254, 63.9695, 47.5767
 0/tile_mode = 0
 0/occluder_offset = Vector2( 0, 0 )
 0/navigation_offset = Vector2( 0, 0 )
+0/navigation = SubResource( 3 )
 0/shape_offset = Vector2( 0, 0 )
 0/shape_transform = Transform2D( 1, 0, 0, 1, 0, 0 )
 0/shape = SubResource( 1 )

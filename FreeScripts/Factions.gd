@@ -1,0 +1,1 @@
+enum names {RED, BLUE}

@@ -1,15 +1,23 @@
 extends Node
 
-var tank_class = load("res://Units/Tank.tscn")
+var factions = preload("res://FreeScripts/Factions.gd")
+
+var tank_scene = load("res://Units/Tank.tscn")
+
 var terrain
+var interface
 var order_of_battle = []
 
 func _ready():
   terrain = get_tree().get_root().get_node("HexMap/Terrain")
+  interface = get_tree().get_root().get_node("HexMap/Interface")
 
-  # Mock unit, just for testing.  
-  var unit_to_place = tank_class.instance() as Node2D
-  var wc = terrain.emplace(unit_to_place, Vector2(12, 3))
+  # Stub the unit creation code. 
+  var unit_to_place = tank_scene.instance()
+  unit_to_place.unit_name = "Gen. Patton"
+  unit_to_place.faction = factions.names.RED
+  interface.unmark(unit_to_place) # Forces the color.
+  terrain.emplace(unit_to_place, Vector2(12, 3))
   
   order_of_battle.append(unit_to_place)
   add_child(unit_to_place)
