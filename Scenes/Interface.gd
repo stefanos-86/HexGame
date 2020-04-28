@@ -59,9 +59,20 @@ func animate_movement(unit, path):
   units.remove_child(unit)
   var transporter = $MovementPath/PathFollow2D/Transporter
   unit.position = Vector2(0, 0)
+  unit.set_rotation(0)
   transporter.add_child(unit)
   moving_unit = unit # Store it so we can get it back in the animation callback.
   transporter.reset_at_start(distance_to_cover)  
   
-func _on_Transporter_movement_animation_done(unit):
+func _on_Transporter_movement_animation_done():
+  var transporter = $MovementPath/PathFollow2D/Transporter
+  transporter.remove_child(moving_unit)
   units.add_child(moving_unit)
+  moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
+  moving_unit.set_position($MovementPath/PathFollow2D.get_position());
+  
+  
+  print (moving_unit.get_rotation_degrees())
+  
+
+ 

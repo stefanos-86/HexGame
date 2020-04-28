@@ -6,7 +6,6 @@
 [ext_resource path="res://Units/Highlight.png" type="Texture" id=4]
 
 [node name="Tank" type="Node2D"]
-rotation = 1.5708
 script = ExtResource( 3 )
 
 [node name="Highlight" type="Sprite" parent="."]
@@ -17,4 +16,3 @@ texture = ExtResource( 2 )
 
 [node name="Tank_turret" type="Sprite" parent="."]
 texture = ExtResource( 1 )
-offset = Vector2( 0, -3 )
