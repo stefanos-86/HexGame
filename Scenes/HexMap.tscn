@@ -1,10 +1,16 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
 [ext_resource path="res://Units/Tank.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scenes/Control.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Terrain.gd" type="Script" id=4]
 [ext_resource path="res://Tiles/Selected.png" type="Texture" id=5]
+[ext_resource path="res://Font/Warenhaus-Standard.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://Scenes/Units.gd" type="Script" id=7]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+font_data = ExtResource( 6 )
 
 [node name="HexMap" type="Node2D"]
 
@@ -19,9 +25,11 @@ tile_data = PoolIntArray( 0, 0, 0, 65539, 1, 0, 65541, 1, 0, 65543, 1, 0, 65545,
 script = ExtResource( 4 )
 
 [node name="Units" type="Node" parent="."]
+script = ExtResource( 7 )
 
 [node name="Tank" parent="Units" instance=ExtResource( 2 )]
 position = Vector2( 208.107, 228.785 )
+script = null
 
 [node name="Control" type="Control" parent="."]
 margin_right = 40.0
@@ -34,6 +42,7 @@ __meta__ = {
 [node name="CursorPosition" type="Label" parent="Control"]
 margin_right = 40.0
 margin_bottom = 14.0
+custom_fonts/font = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
