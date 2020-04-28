@@ -7,6 +7,7 @@ var units
 var interface
 
 var selected_unit = null
+var animation_in_progress = false
 
 func _ready():
   var root = get_tree().get_root()
@@ -16,13 +17,16 @@ func _ready():
 
 func _unhandled_input(event):
   if(event.is_action("Shutdown")):
-    Shutdown()
+    shutdown()
+    
+  # Block input when things are moving.
+  if (animation_in_progress):
+    return
     
   if event is InputEventMouseMotion:
     var hit = terrain.detect_cell_under_mouse(event.position)
     interface.describe_cell(hit)
     if (selected_unit != null): # TODO ... and the current cell did not change
-      print("pathfinding")
       var planned_path = terrain.plot_unit_path(selected_unit, hit)
       interface.plot_movement(planned_path)
     
@@ -31,20 +35,23 @@ func _unhandled_input(event):
   if (event is InputEventMouseButton):
     if event.is_pressed():
       if event.button_index == BUTTON_LEFT:
-          select_unit_in_cell(event.position)
+        var hit = terrain.detect_cell_under_mouse(event.position)
+        if(selected_unit == null):
+          select_unit_in_cell(hit)
+        else:
+          move_unit(selected_unit, hit)
           
       if event.button_index == BUTTON_RIGHT:
         unselect_current_unit()
         
       
-func Shutdown():
+func shutdown():
     get_tree().quit() 
 
 
-func select_unit_in_cell(mouse_position):
+func select_unit_in_cell(hit):
   unselect_current_unit()
   
-  var hit = terrain.detect_cell_under_mouse(mouse_position)
   var unit = terrain.what_is_at(hit)
       
   if (unit != null):
@@ -58,3 +65,12 @@ func unselect_current_unit():
   selected_unit = null
 
   
+func move_unit(unit, destination):
+  animation_in_progress = true
+  var planned_path = terrain.plot_unit_path(unit, destination)
+  interface.animate_movement(unit, planned_path)
+  terrain.move(unit, destination)
+
+
+func _on_Transporter_movement_animation_done():
+  animation_in_progress = false

@@ -108,7 +108,6 @@ func fill_navigation_info():
       if (movement_cost != TerrainStats.impassable):
         navigation.add_point(cell_id, map_coordinate, movement_cost)
         positions_id[map_coordinate] = cell_id
-        print ("Point: ", cell_id, " at ", map_coordinate)
         cell_id += 1
           
   for i in range(0, max_map_size):
@@ -123,7 +122,6 @@ func fill_navigation_info():
             var start = positions_id[map_coordinate]
             var end = positions_id[n]
             navigation.connect_points(start, end)
-            print ("Connection a ", start, " - ", end)
         
           
 func movement_cost_for_position(map_coordinate):
@@ -152,11 +150,9 @@ func neighbors_of(map_coordinate):
   
 func plot_unit_path(unit, destination_coordinate):
   if (movement_cost_for_position(destination_coordinate) == TerrainStats.impassable):
-    print ("destination impassable")
     return []
     
   var start_coordinate = where_is(unit)
-  print (start_coordinate)
   if (start_coordinate == null):
     return []  # TODO: handle error in a decent way.
     
@@ -164,8 +160,6 @@ func plot_unit_path(unit, destination_coordinate):
   var end = positions_id[destination_coordinate]
   
   var path = navigation.get_point_path(start, end)
-  print (start, " ", end)
-  print(path)
   return path
 
 func where_is(something):
@@ -173,3 +167,8 @@ func where_is(something):
     if (units_on_map[coordinate] == something):
       return coordinate
   return null
+
+func move(something, here):
+  var old_position = where_is(something)
+  units_on_map[old_position] = null
+  units_on_map[here] = something

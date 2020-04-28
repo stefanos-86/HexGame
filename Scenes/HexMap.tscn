@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
+[ext_resource path="res://Scenes/Transporter.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/Control.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Terrain.gd" type="Script" id=4]
 [ext_resource path="res://Tiles/Selected.png" type="Texture" id=5]
@@ -12,6 +13,11 @@
 size = 30
 font_data = ExtResource( 6 )
 
+[sub_resource type="Curve2D" id=2]
+_data = {
+"points": PoolVector2Array(  )
+}
+
 [node name="HexMap" type="Node2D"]
 
 [node name="Terrain" type="TileMap" parent="."]
@@ -21,7 +27,7 @@ cell_half_offset = 1
 cell_tile_origin = 1
 centered_textures = true
 format = 1
-tile_data = PoolIntArray( 7, 0, 0, 9, 0, 0, 11, 0, 0, 13, 0, 0, 15, 0, 0, 17, 0, 0, 19, 0, 0, 21, 0, 0, 23, 0, 0, 65542, 0, 0, 65543, 0, 0, 65545, 0, 0, 65550, 0, 0, 65551, 0, 0, 65552, 0, 0, 65553, 0, 0, 65555, 0, 0, 65560, 0, 0, 65561, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131083, 0, 0, 131084, 0, 0, 131085, 0, 0, 131086, 0, 0, 131092, 0, 0, 131094, 0, 0, 131096, 0, 0, 131097, 0, 0, 196613, 0, 0, 196614, 0, 0, 196618, 0, 0, 196619, 0, 0, 196620, 0, 0, 196621, 0, 0, 196632, 0, 0, 196633, 0, 0, 262150, 0, 0, 262151, 0, 0, 262156, 0, 0, 262157, 0, 0, 327686, 0, 0, 327687, 0, 0, 327691, 0, 0, 327697, 0, 0, 327698, 0, 0, 393222, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, 393228, 0, 0, 393229, 0, 0, 393230, 0, 0, 393231, 0, 0, 393232, 0, 0, 393234, 0, 0 )
+tile_data = PoolIntArray( 7, 0, 0, 9, 0, 0, 11, 0, 0, 13, 0, 0, 15, 0, 0, 17, 0, 0, 19, 0, 0, 21, 0, 0, 23, 0, 0, 65542, 0, 0, 65543, 0, 0, 65545, 0, 0, 65550, 0, 0, 65551, 0, 0, 65552, 0, 0, 65553, 0, 0, 65555, 0, 0, 65560, 0, 0, 65561, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131083, 0, 0, 131085, 0, 0, 131086, 0, 0, 131092, 0, 0, 131094, 0, 0, 131096, 0, 0, 131097, 0, 0, 196613, 0, 0, 196614, 0, 0, 196618, 0, 0, 196619, 0, 0, 196620, 0, 0, 196621, 0, 0, 196632, 0, 0, 196633, 0, 0, 262150, 0, 0, 262151, 0, 0, 262156, 0, 0, 262157, 0, 0, 327686, 0, 0, 327687, 0, 0, 327691, 0, 0, 327697, 0, 0, 327698, 0, 0, 393222, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, 393228, 0, 0, 393229, 0, 0, 393230, 0, 0, 393231, 0, 0, 393232, 0, 0, 393234, 0, 0 )
 script = ExtResource( 4 )
 
 [node name="Units" type="Node" parent="."]
@@ -56,3 +62,15 @@ position = Vector2( 16, 48 )
 texture = ExtResource( 5 )
 
 [node name="PlannedPath" type="Line2D" parent="Interface"]
+
+[node name="MovementPath" type="Path2D" parent="Interface"]
+curve = SubResource( 2 )
+
+[node name="PathFollow2D" type="PathFollow2D" parent="Interface/MovementPath"]
+position = Vector2( 61.4936, -49.5784 )
+rotation = -0.567167
+
+[node name="Transporter" type="Node2D" parent="Interface/MovementPath/PathFollow2D"]
+script = ExtResource( 2 )
+[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
+[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
