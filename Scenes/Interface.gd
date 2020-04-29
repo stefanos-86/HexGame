@@ -95,3 +95,4 @@ func zoom_out():
  
 func zoom_in():
   $Camera.zoom *= 0.9
+

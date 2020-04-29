@@ -99,4 +99,3 @@ func shoot(attacker, target):
   # May use another transporter or a different signal to know
   # what to do post-animation. Or bake the target removal
   # in the animation.
-

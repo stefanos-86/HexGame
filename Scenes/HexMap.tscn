@@ -96,9 +96,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Descriptions" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+[node name="Turn" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
 margin_right = 256.0
-margin_bottom = 102.0
+margin_bottom = 30.0
+
+[node name="TurnInformation" type="Label" parent="Interface/Camera/L/Sidebar/Turn"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 25.0
+text = "Turn x, player A"
+
+[node name="Descriptions" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 34.0
+margin_right = 256.0
+margin_bottom = 136.0
 
 [node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/Descriptions"]
 margin_left = 3.0
@@ -136,9 +148,9 @@ margin_bottom = 92.0
 text = "Front hull, no effect"
 
 [node name="Action" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 106.0
+margin_top = 140.0
 margin_right = 256.0
-margin_bottom = 172.0
+margin_bottom = 206.0
 
 [node name="CenterContainer" type="CenterContainer" parent="Interface/Camera/L/Sidebar/Action"]
 margin_left = 3.0
@@ -155,6 +167,7 @@ columns = 2
 [node name="Artillery" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
 margin_right = 102.0
 margin_bottom = 26.0
+shortcut_in_tooltip = false
 text = "Artillery"
 
 [node name="Smoke" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
@@ -179,9 +192,9 @@ disabled = true
 text = "-"
 
 [node name="Stance" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 176.0
+margin_top = 210.0
 margin_right = 256.0
-margin_bottom = 242.0
+margin_bottom = 276.0
 
 [node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/Stance"]
 margin_left = 3.0
@@ -205,44 +218,81 @@ items = [ "Slow", null, false, 0, null, "Pedal to the metal", null, false, 1, nu
 selected = 0
 
 [node name="List" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 246.0
+margin_top = 280.0
 margin_right = 256.0
-margin_bottom = 456.0
+margin_bottom = 570.0
 
-[node name="SC" type="ScrollContainer" parent="Interface/Camera/L/Sidebar/List"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/List"]
 margin_left = 3.0
 margin_top = 5.0
 margin_right = 253.0
-margin_bottom = 205.0
-rect_min_size = Vector2( 0, 200 )
-scroll_horizontal_enabled = false
+margin_bottom = 285.0
 
-[node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/List/SC"]
+[node name="SC" type="ScrollContainer" parent="Interface/Camera/L/Sidebar/List/VBoxContainer"]
+margin_right = 250.0
+margin_bottom = 250.0
+rect_min_size = Vector2( 0, 250 )
+scroll_horizontal_enabled = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/SC"]
 margin_right = 230.0
 margin_bottom = 44.0
 
-[node name="Label" type="Label" parent="Interface/Camera/L/Sidebar/List/SC/VB"]
+[node name="Label" type="Label" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/SC/VB"]
 margin_right = 230.0
 margin_bottom = 20.0
 text = "(29, 9), Tank1 Under fire..."
 clip_text = true
 
-[node name="Label2" type="Label" parent="Interface/Camera/L/Sidebar/List/SC/VB"]
+[node name="Label2" type="Label" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/SC/VB"]
 margin_top = 24.0
 margin_right = 230.0
 margin_bottom = 44.0
 text = "(10, 4) Tank2, low ammo"
 
+[node name="CC" type="CenterContainer" parent="Interface/Camera/L/Sidebar/List/VBoxContainer"]
+margin_top = 254.0
+margin_right = 250.0
+margin_bottom = 280.0
+
+[node name="HB" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/CC"]
+margin_left = 13.0
+margin_right = 237.0
+margin_bottom = 26.0
+
+[node name="Details" type="Button" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/CC/HB"]
+margin_right = 82.0
+margin_bottom = 26.0
+disabled = true
+text = "Details"
+
+[node name="Unselect" type="Button" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/CC/HB"]
+margin_left = 86.0
+margin_right = 148.0
+margin_bottom = 26.0
+disabled = true
+text = "Clear"
+
+[node name="Center" type="Button" parent="Interface/Camera/L/Sidebar/List/VBoxContainer/CC/HB"]
+margin_left = 152.0
+margin_right = 224.0
+margin_bottom = 26.0
+disabled = true
+text = "Center"
+
 [node name="TurnButton" type="Button" parent="Interface/Camera/L/Sidebar"]
-margin_top = 460.0
+margin_top = 574.0
 margin_right = 256.0
-margin_bottom = 486.0
+margin_bottom = 600.0
 text = "End Turn"
 
 [node name="View" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 490.0
+margin_top = 604.0
 margin_right = 256.0
-margin_bottom = 586.0
+margin_bottom = 700.0
 
 [node name="CC" type="CenterContainer" parent="Interface/Camera/L/Sidebar/View"]
 margin_left = 3.0
@@ -294,32 +344,39 @@ margin_bottom = 86.0
 text = "Pan Right"
 
 [node name="Admin" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 590.0
+margin_top = 704.0
 margin_right = 256.0
-margin_bottom = 656.0
+margin_bottom = 740.0
 
-[node name="GC" type="GridContainer" parent="Interface/Camera/L/Sidebar/Admin"]
+[node name="HC" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/Admin"]
 margin_left = 3.0
 margin_top = 5.0
 margin_right = 253.0
-margin_bottom = 61.0
-columns = 2
+margin_bottom = 31.0
 
-[node name="Save" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
+[node name="Save" type="Button" parent="Interface/Camera/L/Sidebar/Admin/HC"]
 margin_right = 52.0
 margin_bottom = 26.0
 text = "Save"
 
-[node name="Load" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
+[node name="Load" type="Button" parent="Interface/Camera/L/Sidebar/Admin/HC"]
 margin_left = 56.0
 margin_right = 108.0
 margin_bottom = 26.0
 text = "Load"
 
-[node name="Quit" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
-margin_top = 30.0
-margin_right = 52.0
-margin_bottom = 56.0
+[node name="HC2" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/Admin"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 31.0
+alignment = 2
+
+[node name="Quit" type="Button" parent="Interface/Camera/L/Sidebar/Admin/HC2"]
+margin_left = 198.0
+margin_right = 250.0
+margin_bottom = 26.0
 text = "Quit"
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/Admin/HC2/Quit" to="Control" method="shutdown"]
