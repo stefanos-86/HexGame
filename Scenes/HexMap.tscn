@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/Transporter.gd" type="Script" id=2]
@@ -8,15 +8,16 @@
 [ext_resource path="res://Font/Warenhaus-Standard.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://Scenes/Units.gd" type="Script" id=7]
 [ext_resource path="res://Scenes/Interface.gd" type="Script" id=8]
-
-[sub_resource type="DynamicFont" id=1]
-size = 30
-font_data = ExtResource( 6 )
+[ext_resource path="res://Units/projectiles/Missilepng.png" type="Texture" id=9]
 
 [sub_resource type="Curve2D" id=2]
 _data = {
 "points": PoolVector2Array(  )
 }
+
+[sub_resource type="DynamicFont" id=1]
+size = 25
+font_data = ExtResource( 6 )
 
 [node name="HexMap" type="Node2D"]
 
@@ -49,14 +50,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CellDescription" type="Label" parent="Interface"]
-margin_right = 40.0
-margin_bottom = 30.0
-custom_fonts/font = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="CellCursor" type="Sprite" parent="Interface"]
 position = Vector2( 16, 48 )
 texture = ExtResource( 5 )
@@ -72,5 +65,64 @@ rotation = -0.567167
 
 [node name="Transporter" type="Node2D" parent="Interface/MovementPath/PathFollow2D"]
 script = ExtResource( 2 )
+
+[node name="Missile" type="Sprite" parent="Interface/MovementPath/PathFollow2D/Transporter"]
+visible = false
+position = Vector2( -78.5011, 8.77861 )
+rotation = 0.567167
+texture = ExtResource( 9 )
+
+[node name="Camera" type="Camera2D" parent="Interface"]
+position = Vector2( 513.741, 297.576 )
+current = true
+
+[node name="L" type="CanvasLayer" parent="Interface/Camera"]
+
+[node name="Sidebar" type="VBoxContainer" parent="Interface/Camera/L"]
+self_modulate = Color( 1, 0, 0, 1 )
+anchor_left = 0.7
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CellDescription" type="Label" parent="Interface/Camera/L/Sidebar"]
+margin_right = 307.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 29.0
+margin_right = 307.0
+margin_bottom = 49.0
+rect_min_size = Vector2( 0, 20 )
+scroll_horizontal_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/ScrollContainer"]
+margin_right = 58.0
+margin_bottom = 67.0
+
+[node name="Label" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
+margin_right = 58.0
+margin_bottom = 31.0
+text = "Aaaaaaaa"
+autowrap = true
+
+[node name="Label2" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
+margin_top = 35.0
+margin_right = 58.0
+margin_bottom = 49.0
+text = "Aaaaaaaa"
+
+[node name="Label3" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
+margin_top = 53.0
+margin_right = 58.0
+margin_bottom = 67.0
+text = "Aaaaaaaa"
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]

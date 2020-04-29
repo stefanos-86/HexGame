@@ -21,3 +21,12 @@ func _ready():
   
   order_of_battle.append(unit_to_place)
   add_child(unit_to_place)
+  
+  unit_to_place = tank_scene.instance()
+  unit_to_place.unit_name = "Gen. Rommel"
+  unit_to_place.faction = factions.names.BLUE
+  interface.unmark(unit_to_place) # Forces the color.
+  terrain.emplace(unit_to_place, Vector2(15, 1))
+  
+  order_of_battle.append(unit_to_place)
+  add_child(unit_to_place)

@@ -25,7 +25,7 @@ func describe_cell(cell_coordinates):
   if unit != null:
     unit_description = str(unit.name) + " " + unit.unit_name
   
-  $CellDescription.text = str(cell_coordinates) + " " + unit_description
+  $Camera/L/Sidebar/CellDescription.text = str(cell_coordinates) + " " + unit_description
   $CellCursor.position = terrain.cell_to_world(cell_coordinates)
   
   
@@ -62,17 +62,36 @@ func animate_movement(unit, path):
   unit.set_rotation(0)
   transporter.add_child(unit)
   moving_unit = unit # Store it so we can get it back in the animation callback.
-  transporter.reset_at_start(distance_to_cover)  
+  transporter.reset_at_start(distance_to_cover, 120)  
   
 func _on_Transporter_movement_animation_done():
-  var transporter = $MovementPath/PathFollow2D/Transporter
-  transporter.remove_child(moving_unit)
-  units.add_child(moving_unit)
-  moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
-  moving_unit.set_position($MovementPath/PathFollow2D.get_position());
+  if (moving_unit == $MovementPath/PathFollow2D/Transporter/Missile):
+    moving_unit.set_visible(false)
+  else:
+    var transporter = $MovementPath/PathFollow2D/Transporter
+    transporter.remove_child(moving_unit)
+    units.add_child(moving_unit)
+    moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
+    moving_unit.set_position($MovementPath/PathFollow2D.get_position());
+    moving_unit = null
   
-  
-  print (moving_unit.get_rotation_degrees())
-  
+func animate_attack(fire_path):
+  $MovementPath.curve.clear_points()
+  for p in fire_path:
+    var point_in_wc = terrain.cell_to_world(p)
+    $MovementPath.curve.add_point(point_in_wc)
+    
+  var distance_to_cover = $MovementPath.curve.get_baked_length()
+    
+  var missile = $MovementPath/PathFollow2D/Transporter/Missile
+  missile.set_position(Vector2(0, 0))
+  missile.set_rotation(0)
+  missile.set_visible(true)
+  moving_unit = missile
+  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300)  
 
+func zoom_out():
+  $Camera.zoom *= 1.1
  
+func zoom_in():
+  $Camera.zoom *= 0.9
