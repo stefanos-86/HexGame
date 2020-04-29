@@ -1,23 +1,19 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/Transporter.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/Control.gd" type="Script" id=3]
 [ext_resource path="res://Scenes/Terrain.gd" type="Script" id=4]
 [ext_resource path="res://Tiles/Selected.png" type="Texture" id=5]
-[ext_resource path="res://Font/Warenhaus-Standard.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://Font/UiTheme.tres" type="Theme" id=6]
 [ext_resource path="res://Scenes/Units.gd" type="Script" id=7]
 [ext_resource path="res://Scenes/Interface.gd" type="Script" id=8]
 [ext_resource path="res://Units/projectiles/Missilepng.png" type="Texture" id=9]
 
-[sub_resource type="Curve2D" id=2]
+[sub_resource type="Curve2D" id=1]
 _data = {
 "points": PoolVector2Array(  )
 }
-
-[sub_resource type="DynamicFont" id=1]
-size = 25
-font_data = ExtResource( 6 )
 
 [node name="HexMap" type="Node2D"]
 
@@ -57,7 +53,7 @@ texture = ExtResource( 5 )
 [node name="PlannedPath" type="Line2D" parent="Interface"]
 
 [node name="MovementPath" type="Path2D" parent="Interface"]
-curve = SubResource( 2 )
+curve = SubResource( 1 )
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Interface/MovementPath"]
 position = Vector2( 61.4936, -49.5784 )
@@ -78,51 +74,252 @@ current = true
 
 [node name="L" type="CanvasLayer" parent="Interface/Camera"]
 
-[node name="Sidebar" type="VBoxContainer" parent="Interface/Camera/L"]
-self_modulate = Color( 1, 0, 0, 1 )
-anchor_left = 0.7
+[node name="SidebarBackground" type="Panel" parent="Interface/Camera/L"]
+anchor_left = 0.8
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Sidebar" type="VBoxContainer" parent="Interface/Camera/L"]
+self_modulate = Color( 1, 0, 0, 1 )
+anchor_left = 0.805
+anchor_top = 0.005
+anchor_right = 0.995
+anchor_bottom = 0.995
 mouse_filter = 0
+theme = ExtResource( 6 )
+custom_constants/separation = 4
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CellDescription" type="Label" parent="Interface/Camera/L/Sidebar"]
-margin_right = 307.0
-margin_bottom = 25.0
-custom_fonts/font = SubResource( 1 )
+[node name="Descriptions" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_right = 256.0
+margin_bottom = 102.0
+
+[node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/Descriptions"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 97.0
+
+[node name="CellDescription" type="Label" parent="Interface/Camera/L/Sidebar/Descriptions/VB"]
+margin_right = 250.0
+margin_bottom = 20.0
+text = "1234678901234567890123456"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Interface/Camera/L/Sidebar"]
-margin_top = 29.0
-margin_right = 307.0
-margin_bottom = 49.0
-rect_min_size = Vector2( 0, 20 )
+[node name="UnitDescription" type="Label" parent="Interface/Camera/L/Sidebar/Descriptions/VB"]
+margin_top = 24.0
+margin_right = 250.0
+margin_bottom = 44.0
+text = "Tank Move:2 Ammo:4"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TargetDescription" type="Label" parent="Interface/Camera/L/Sidebar/Descriptions/VB"]
+margin_top = 48.0
+margin_right = 250.0
+margin_bottom = 68.0
+text = "Tank, 22 hex, 35% hit"
+
+[node name="ActionResults" type="Label" parent="Interface/Camera/L/Sidebar/Descriptions/VB"]
+margin_top = 72.0
+margin_right = 250.0
+margin_bottom = 92.0
+text = "Front hull, no effect"
+
+[node name="Action" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 106.0
+margin_right = 256.0
+margin_bottom = 172.0
+
+[node name="CenterContainer" type="CenterContainer" parent="Interface/Camera/L/Sidebar/Action"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 61.0
+
+[node name="GD" type="GridContainer" parent="Interface/Camera/L/Sidebar/Action/CenterContainer"]
+margin_left = 16.0
+margin_right = 234.0
+margin_bottom = 56.0
+columns = 2
+
+[node name="Artillery" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
+margin_right = 102.0
+margin_bottom = 26.0
+text = "Artillery"
+
+[node name="Smoke" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
+margin_left = 106.0
+margin_right = 218.0
+margin_bottom = 26.0
+text = "Fire Smoke"
+
+[node name="SpecificAction1" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
+margin_top = 30.0
+margin_right = 102.0
+margin_bottom = 56.0
+disabled = true
+text = "-"
+
+[node name="SpecificAction2" type="Button" parent="Interface/Camera/L/Sidebar/Action/CenterContainer/GD"]
+margin_left = 106.0
+margin_top = 30.0
+margin_right = 218.0
+margin_bottom = 56.0
+disabled = true
+text = "-"
+
+[node name="Stance" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 176.0
+margin_right = 256.0
+margin_bottom = 242.0
+
+[node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/Stance"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 61.0
+
+[node name="Fire" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+margin_right = 250.0
+margin_bottom = 26.0
+text = "Fire at will"
+items = [ "Fire at will", null, false, 0, null, "Return fire", null, false, 1, null, "Hold fire", null, false, 2, null ]
+selected = 0
+
+[node name="Move" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+margin_top = 30.0
+margin_right = 250.0
+margin_bottom = 56.0
+text = "Slow"
+items = [ "Slow", null, false, 0, null, "Pedal to the metal", null, false, 1, null ]
+selected = 0
+
+[node name="List" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 246.0
+margin_right = 256.0
+margin_bottom = 456.0
+
+[node name="SC" type="ScrollContainer" parent="Interface/Camera/L/Sidebar/List"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 205.0
+rect_min_size = Vector2( 0, 200 )
 scroll_horizontal_enabled = false
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/ScrollContainer"]
-margin_right = 58.0
-margin_bottom = 67.0
+[node name="VB" type="VBoxContainer" parent="Interface/Camera/L/Sidebar/List/SC"]
+margin_right = 230.0
+margin_bottom = 44.0
 
-[node name="Label" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
-margin_right = 58.0
-margin_bottom = 31.0
-text = "Aaaaaaaa"
-autowrap = true
+[node name="Label" type="Label" parent="Interface/Camera/L/Sidebar/List/SC/VB"]
+margin_right = 230.0
+margin_bottom = 20.0
+text = "(29, 9), Tank1 Under fire..."
+clip_text = true
 
-[node name="Label2" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
-margin_top = 35.0
-margin_right = 58.0
-margin_bottom = 49.0
-text = "Aaaaaaaa"
+[node name="Label2" type="Label" parent="Interface/Camera/L/Sidebar/List/SC/VB"]
+margin_top = 24.0
+margin_right = 230.0
+margin_bottom = 44.0
+text = "(10, 4) Tank2, low ammo"
 
-[node name="Label3" type="Label" parent="Interface/Camera/L/Sidebar/ScrollContainer/VBoxContainer"]
-margin_top = 53.0
-margin_right = 58.0
-margin_bottom = 67.0
-text = "Aaaaaaaa"
-[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
+[node name="TurnButton" type="Button" parent="Interface/Camera/L/Sidebar"]
+margin_top = 460.0
+margin_right = 256.0
+margin_bottom = 486.0
+text = "End Turn"
+
+[node name="View" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 490.0
+margin_right = 256.0
+margin_bottom = 586.0
+
+[node name="CC" type="CenterContainer" parent="Interface/Camera/L/Sidebar/View"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 91.0
+
+[node name="GC" type="GridContainer" parent="Interface/Camera/L/Sidebar/View/CC"]
+margin_left = 25.0
+margin_right = 224.0
+margin_bottom = 86.0
+columns = 2
+
+[node name="ZoomIn" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_right = 93.0
+margin_bottom = 26.0
+text = "Zoom In"
+
+[node name="ZoomOut2" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_left = 97.0
+margin_right = 199.0
+margin_bottom = 26.0
+text = "Zoom Out"
+
+[node name="PanUp" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_top = 30.0
+margin_right = 93.0
+margin_bottom = 56.0
+text = "Pan Up"
+
+[node name="PanDown" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_left = 97.0
+margin_top = 30.0
+margin_right = 199.0
+margin_bottom = 56.0
+text = "Pan Down"
+
+[node name="PanL" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_top = 60.0
+margin_right = 93.0
+margin_bottom = 86.0
+text = "Pan Left"
+
+[node name="PanR" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+margin_left = 97.0
+margin_top = 60.0
+margin_right = 199.0
+margin_bottom = 86.0
+text = "Pan Right"
+
+[node name="Admin" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
+margin_top = 590.0
+margin_right = 256.0
+margin_bottom = 656.0
+
+[node name="GC" type="GridContainer" parent="Interface/Camera/L/Sidebar/Admin"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 253.0
+margin_bottom = 61.0
+columns = 2
+
+[node name="Save" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
+margin_right = 52.0
+margin_bottom = 26.0
+text = "Save"
+
+[node name="Load" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
+margin_left = 56.0
+margin_right = 108.0
+margin_bottom = 26.0
+text = "Load"
+
+[node name="Quit" type="Button" parent="Interface/Camera/L/Sidebar/Admin/GC"]
+margin_top = 30.0
+margin_right = 52.0
+margin_bottom = 56.0
+text = "Quit"
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
+[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]

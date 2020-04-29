@@ -25,7 +25,7 @@ func describe_cell(cell_coordinates):
   if unit != null:
     unit_description = str(unit.name) + " " + unit.unit_name
   
-  $Camera/L/Sidebar/CellDescription.text = str(cell_coordinates) + " " + unit_description
+  #$Camera/L/Sidebar/CellDescription.text = str(cell_coordinates) + " " + unit_description
   $CellCursor.position = terrain.cell_to_world(cell_coordinates)
   
   
