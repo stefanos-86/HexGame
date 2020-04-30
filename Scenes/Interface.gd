@@ -7,6 +7,12 @@ var units
 
 var moving_unit
 
+# Controls the camera zoom. Big number, big field of view
+# (increase the level to zoom out).
+var zoom_level
+const max_zoom_level = 3
+const min_zoom_level = 0.5
+
 var colors_for_factions = {
   factions.names.RED: Color(1, 0, 0),
   factions.names.BLUE: Color(0, 0, 1),
@@ -17,6 +23,8 @@ func _ready():
   var root = get_tree().get_root()
   terrain = root.get_node("HexMap/Terrain")
   units = root.get_node("HexMap/Units")
+  
+  zoom_level = 1
 
 func describe_cell(cell_coordinates):
   var unit = terrain.what_is_at(cell_coordinates)
@@ -91,8 +99,18 @@ func animate_attack(fire_path):
   $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300)  
 
 func zoom_out():
-  $Camera.zoom *= 1.1
+  $Camera.zoom = change_zoom(1.1)
  
 func zoom_in():
-  $Camera.zoom *= 0.9
+  $Camera.zoom = change_zoom(0.9)
+  
+func change_zoom(multiplier):
+  zoom_level *= multiplier
+  
+  if (zoom_level > max_zoom_level):
+    zoom_level = max_zoom_level
+  if (zoom_level < min_zoom_level):
+    zoom_level = min_zoom_level
+    
+  return Vector2(zoom_level, zoom_level)  
 

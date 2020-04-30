@@ -309,12 +309,14 @@ columns = 2
 [node name="ZoomIn" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
 margin_right = 93.0
 margin_bottom = 26.0
+hint_tooltip = "Numpad + / Mouse Wheel Up"
 text = "Zoom In"
 
-[node name="ZoomOut2" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="ZoomOut" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
 margin_left = 97.0
 margin_right = 199.0
 margin_bottom = 26.0
+hint_tooltip = "Numpad - / Mouse Wheel Down"
 text = "Zoom Out"
 
 [node name="PanUp" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
@@ -376,7 +378,10 @@ alignment = 2
 margin_left = 198.0
 margin_right = 250.0
 margin_bottom = 26.0
+hint_tooltip = "Esc"
 text = "Quit"
-[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
+[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomIn" to="Interface" method="zoom_in"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomOut" to="Interface" method="zoom_out"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Admin/HC2/Quit" to="Control" method="shutdown"]
