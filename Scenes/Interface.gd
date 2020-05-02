@@ -1,6 +1,5 @@
 extends Control
 
-
 var terrain
 var units
 
@@ -46,7 +45,7 @@ func animate_movement(unit, path):
   unit.set_rotation(0)
   transporter.add_child(unit)
   moving_unit = unit # Store it so we can get it back in the animation callback.
-  transporter.reset_at_start(distance_to_cover, 120)  
+  transporter.reset_at_start(distance_to_cover, 120, "movement_animation_done", unit)  
   
 func _on_Transporter_movement_animation_done():
   if (moving_unit == $MovementPath/PathFollow2D/Transporter/Missile):
@@ -59,11 +58,15 @@ func _on_Transporter_movement_animation_done():
     moving_unit.set_position($MovementPath/PathFollow2D.get_position());
     moving_unit = null
   
-func animate_attack(fire_path):
+func animate_attack(attacker, target, outcome):
+  attacker.rotate_turret_towards(target.position)
+  
   $MovementPath.curve.clear_points()
-  for p in fire_path:
-    var point_in_wc = terrain.cell_to_world(p)
-    $MovementPath.curve.add_point(point_in_wc)
+  
+  var attack_from = terrain.cell_to_world(terrain.where_is(attacker))
+  var attack_to = terrain.cell_to_world(terrain.where_is(target))
+  $MovementPath.curve.add_point(attack_from)
+  $MovementPath.curve.add_point(attack_to)
     
   var distance_to_cover = $MovementPath.curve.get_baked_length()
     
@@ -72,7 +75,7 @@ func animate_attack(fire_path):
   missile.set_rotation(0)
   missile.set_visible(true)
   moving_unit = missile
-  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300)  
+  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300, "movement_animation_done", missile)  
 
 func zoom_out():
   change_zoom(1.1)

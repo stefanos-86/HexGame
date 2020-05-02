@@ -93,6 +93,10 @@ func _unhandled_input(event):
             shoot(selected_unit, target)
           
       if event.button_index == BUTTON_RIGHT:
+        var corrected_mouse_position = get_global_mouse_position()
+        turn_towards(corrected_mouse_position)
+        
+      if event.button_index == BUTTON_MIDDLE:
         unselect_current_unit()
         
       
@@ -125,14 +129,18 @@ func _on_Transporter_movement_animation_done():
 
 func shoot(attacker, target):
   animation_in_progress = true
-  var attack_from = terrain.where_is(attacker)
-  var attack_to = terrain.where_is(target)
-  var bullet_path = [attack_from, attack_to]
-  interface.animate_attack(bullet_path)
+  var attack_result = game.fire(attacker, target, terrain)
+  print(game.fire_outcome.keys()[attack_result])
+  
+  interface.animate_attack(attacker, target, attack_result)
   # TODO: remove target from map at the end of the animation...
   # May use another transporter or a different signal to know
   # what to do post-animation. Or bake the target removal
   # in the animation.
+
+func turn_towards(position):
+  selected_unit.look_at(position)
+  selected_unit.rotate_turret_towards(position)
 
 func next_turn():
   game.next_turn()
