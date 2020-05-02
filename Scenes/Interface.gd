@@ -9,9 +9,13 @@ var moving_unit
 
 # Controls the camera zoom. Big number, big field of view
 # (increase the level to zoom out).
-var zoom_level
+var zoom_level = 1
 const max_zoom_level = 3
 const min_zoom_level = 0.5
+const pan_step = 20
+
+var cam_lim_top
+var cam_lim_bottom
 
 var colors_for_factions = {
   factions.names.RED: Color(1, 0, 0),
@@ -24,7 +28,8 @@ func _ready():
   terrain = root.get_node("HexMap/Terrain")
   units = root.get_node("HexMap/Units")
   
-  zoom_level = 1
+  compute_pan_limits()
+  pan_up() # Ensure the camera gets re-positioned within the limits.
 
 func describe_cell(cell_coordinates):
   var unit = terrain.what_is_at(cell_coordinates)
@@ -99,18 +104,50 @@ func animate_attack(fire_path):
   $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300)  
 
 func zoom_out():
-  $Camera.zoom = change_zoom(1.1)
+  change_zoom(1.1)
  
 func zoom_in():
-  $Camera.zoom = change_zoom(0.9)
+  change_zoom(0.9)
   
 func change_zoom(multiplier):
   zoom_level *= multiplier
+  zoom_level = clamp(zoom_level, min_zoom_level, max_zoom_level)
+  $Camera.zoom = Vector2(zoom_level, zoom_level)  
+
+func pan_up():
+  pan(0, -pan_step)
+
+func pan_down():
+  pan(0, pan_step)
   
-  if (zoom_level > max_zoom_level):
-    zoom_level = max_zoom_level
-  if (zoom_level < min_zoom_level):
-    zoom_level = min_zoom_level
-    
-  return Vector2(zoom_level, zoom_level)  
+func pan_left():
+  pan(-pan_step, 0)
+
+func pan_right():
+  pan(pan_step, 0)
+
+func pan(x, y):
+  var future_position = $Camera.position + Vector2(x, y) * zoom_level # Go fast when zoom out.
+  
+  # The field of view won't go past the limits, but the
+  # camera pivot point would keep moving. So the pivot has
+  # smaller limits to move.
+  var zoom_factor = clamp(zoom_level, min_zoom_level, 1) # Avoid crossing the clamping limit when zooming out.
+  var half_screen = get_viewport().size * zoom_factor / 2
+  
+  future_position.x = clamp(future_position.x, cam_lim_bottom.x + half_screen.x, cam_lim_top.x - half_screen.x)
+  future_position.y = clamp(future_position.y, cam_lim_bottom.y + half_screen.y, cam_lim_top.y - half_screen.y)
+  
+  $Camera.position = future_position
+  
+func compute_pan_limits():
+  var map_extent = terrain.bounding_box 
+  var min_extent = terrain.cell_to_world(map_extent.position)
+  var max_extent = terrain.cell_to_world(map_extent.end)
+  
+  var covered_by_sidebar = $Camera/L/Sidebar.rect_size.x
+
+  cam_lim_bottom = Vector2(min_extent.x, min_extent.y)
+  cam_lim_top = Vector2(max_extent.x + covered_by_sidebar, max_extent.y)
+
 

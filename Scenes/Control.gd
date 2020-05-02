@@ -27,6 +27,14 @@ func _unhandled_input(event):
     interface.zoom_in()
   elif (event.is_action("ZoomOut")):
     interface.zoom_out()
+  elif (event.is_action("PanUp")):
+    interface.pan_up()
+  elif (event.is_action("PanDown")):
+    interface.pan_down()
+  elif (event.is_action("PanLeft")):
+    interface.pan_left()
+  elif (event.is_action("PanRight")):
+    interface.pan_right()
     
     
   if event is InputEventMouseMotion:

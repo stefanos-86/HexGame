@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Tiles/Terrain.tres" type="TileSet" id=1]
 [ext_resource path="res://Scenes/Transporter.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://Scenes/Units.gd" type="Script" id=7]
 [ext_resource path="res://Scenes/Interface.gd" type="Script" id=8]
 [ext_resource path="res://Units/projectiles/Missilepng.png" type="Texture" id=9]
+[ext_resource path="res://DebugSquare.png" type="Texture" id=10]
 
 [sub_resource type="Curve2D" id=1]
 _data = {
@@ -24,8 +25,12 @@ cell_half_offset = 1
 cell_tile_origin = 1
 centered_textures = true
 format = 1
-tile_data = PoolIntArray( 7, 0, 0, 9, 0, 0, 11, 0, 0, 13, 0, 0, 15, 0, 0, 17, 0, 0, 19, 0, 0, 21, 0, 0, 23, 0, 0, 65542, 0, 0, 65543, 0, 0, 65545, 0, 0, 65550, 0, 0, 65551, 0, 0, 65552, 0, 0, 65553, 0, 0, 65555, 0, 0, 65560, 0, 0, 65561, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131083, 0, 0, 131085, 0, 0, 131086, 0, 0, 131092, 0, 0, 131094, 0, 0, 131096, 0, 0, 131097, 0, 0, 196613, 0, 0, 196614, 0, 0, 196618, 0, 0, 196619, 0, 0, 196620, 0, 0, 196621, 0, 0, 196632, 0, 0, 196633, 0, 0, 262150, 0, 0, 262151, 0, 0, 262156, 0, 0, 262157, 0, 0, 327686, 0, 0, 327687, 0, 0, 327691, 0, 0, 327697, 0, 0, 327698, 0, 0, 393222, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, 393228, 0, 0, 393229, 0, 0, 393230, 0, 0, 393231, 0, 0, 393232, 0, 0, 393234, 0, 0 )
+tile_data = PoolIntArray( -65523, 0, 0, -65522, 0, 0, 7, 0, 0, 9, 0, 0, 11, 0, 0, 13, 0, 0, 14, 0, 0, 15, 0, 0, 17, 0, 0, 19, 0, 0, 21, 0, 0, 23, 0, 0, 65539, 0, 0, 65540, 0, 0, 65542, 0, 0, 65543, 0, 0, 65545, 0, 0, 65550, 0, 0, 65551, 0, 0, 65552, 0, 0, 65553, 0, 0, 65555, 0, 0, 65560, 0, 0, 65561, 0, 0, 131076, 0, 0, 131077, 0, 0, 131078, 0, 0, 131083, 0, 0, 131085, 0, 0, 131086, 0, 0, 131092, 0, 0, 131094, 0, 0, 131096, 0, 0, 131097, 0, 0, 196613, 0, 0, 196614, 0, 0, 196618, 0, 0, 196619, 0, 0, 196620, 0, 0, 196621, 0, 0, 196632, 0, 0, 196633, 0, 0, 327676, 0, 0, 262150, 0, 0, 262151, 0, 0, 262156, 0, 0, 262157, 0, 0, 262182, 0, 0, 327686, 0, 0, 327687, 0, 0, 327691, 0, 0, 327697, 0, 0, 327698, 0, 0, 393222, 0, 0, 393224, 0, 0, 393225, 0, 0, 393226, 0, 0, 393228, 0, 0, 393229, 0, 0, 393230, 0, 0, 393231, 0, 0, 393232, 0, 0, 393234, 0, 0, 458767, 0, 0, 524305, 0, 0, 524308, 0, 0 )
 script = ExtResource( 4 )
+
+[node name="DebugSquare" type="Sprite" parent="Terrain"]
+texture = ExtResource( 10 )
+centered = false
 
 [node name="Units" type="Node" parent="."]
 script = ExtResource( 7 )
@@ -69,12 +74,14 @@ rotation = 0.567167
 texture = ExtResource( 9 )
 
 [node name="Camera" type="Camera2D" parent="Interface"]
-position = Vector2( 513.741, 297.576 )
+position = Vector2( 350.531, 451.755 )
 current = true
+editor_draw_limits = true
 
 [node name="L" type="CanvasLayer" parent="Interface/Camera"]
 
 [node name="SidebarBackground" type="Panel" parent="Interface/Camera/L"]
+visible = false
 anchor_left = 0.8
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -384,4 +391,8 @@ text = "Quit"
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomIn" to="Interface" method="zoom_in"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomOut" to="Interface" method="zoom_out"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanUp" to="Interface" method="pan_up"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanDown" to="Interface" method="pan_down"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanL" to="Interface" method="pan_left"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanR" to="Interface" method="pan_right"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Admin/HC2/Quit" to="Control" method="shutdown"]

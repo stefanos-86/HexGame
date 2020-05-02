@@ -29,6 +29,9 @@ var positions_id = {}
 # Keep track of what is at every cell.
 var units_on_map = {}
 
+# Useful to figure out the full size of the map.
+var bounding_box : Rect2
+
 # For some reasons map_to_world returns the top 
 # left corner of the cell even if I set the origin in 
 # the center. This offset corrects for it.
@@ -36,6 +39,24 @@ var half_cell = cell_size / 2
 
 func _ready():
   fill_navigation_info()
+  compute_bounding_box()
+  
+func compute_bounding_box():
+  # get_used_rect returns something I don't fully get.
+  # Seems to miss the cells in the negative part.
+  # TODO: check again.
+  var cells = get_used_cells()
+  for c in cells:
+    bounding_box = bounding_box.expand(c)
+  
+  bounding_box = bounding_box.grow(1)
+  
+  var pos_wc = cell_to_world(bounding_box.position) 
+  var size_wc = cell_to_world(bounding_box.size) 
+  
+  $DebugSquare.scale = size_wc / 64
+  $DebugSquare.position = pos_wc
+  print ($DebugSquare.position)
 
 # Set the object at the given position and tells you
 # where in the world it ended up.
@@ -96,13 +117,18 @@ func what_is_at(cell_coordinates):
   if (units_on_map.has(cell_coordinates)):
     return units_on_map[cell_coordinates]
   return null
-
+  
+func where_is(something):
+  for coordinate in units_on_map:
+    if (units_on_map[coordinate] == something):
+      return coordinate
+  return null
 
 func fill_navigation_info():
   var max_map_size = 30
   var cell_id = 0
-  for i in range(0, max_map_size):
-    for j in range(0, max_map_size):
+  for i in range(-10, max_map_size):
+    for j in range(-10, max_map_size):
       var map_coordinate = Vector2(i, j)
       var movement_cost = movement_cost_for_position(map_coordinate)
       if (movement_cost != TerrainStats.impassable):
@@ -110,8 +136,8 @@ func fill_navigation_info():
         positions_id[map_coordinate] = cell_id
         cell_id += 1
           
-  for i in range(0, max_map_size):
-    for j in range(0, max_map_size):
+  for i in range(-10, max_map_size):
+    for j in range(-10, max_map_size):
       var map_coordinate = Vector2(i, j)
       var movement_cost = movement_cost_for_position(map_coordinate)
       if (movement_cost != TerrainStats.impassable):
@@ -162,13 +188,10 @@ func plot_unit_path(unit, destination_coordinate):
   var path = navigation.get_point_path(start, end)
   return path
 
-func where_is(something):
-  for coordinate in units_on_map:
-    if (units_on_map[coordinate] == something):
-      return coordinate
-  return null
-
 func move(something, here):
   var old_position = where_is(something)
   units_on_map[old_position] = null
   units_on_map[here] = something
+
+
+
