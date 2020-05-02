@@ -9,14 +9,16 @@ extends TileMap
 class TerrainStats:
   const impassable = -1
   var base_movement_cost
+  var terrain_name
   
-  func _init(movement_cost):
+  func _init(movement_cost, name):
     base_movement_cost = movement_cost
+    terrain_name = name
   
 # The keys are the tiles indexes.
 var tiles_db = {
-  0: TerrainStats.new(1), # Open terrain costs 1 movement point.
-  1: TerrainStats.new(TerrainStats.impassable)  # Water is impassable.
+  0: TerrainStats.new(1, "open grassland"), # Open terrain costs 1 movement point.
+  1: TerrainStats.new(TerrainStats.impassable, "deep water")  # Water is impassable.
  }
 
 # I am not sure if this can easily handle the complex movement
@@ -41,6 +43,7 @@ func _ready():
   fill_navigation_info()
   compute_bounding_box()
   
+  
 func compute_bounding_box():
   # get_used_rect returns something I don't fully get.
   # Seems to miss the cells in the negative part.
@@ -56,8 +59,7 @@ func compute_bounding_box():
   
   $DebugSquare.scale = size_wc / 64
   $DebugSquare.position = pos_wc
-  print ($DebugSquare.position)
-
+ 
 # Set the object at the given position and tells you
 # where in the world it ended up.
 func emplace(something, cell_coordinates):
@@ -123,6 +125,12 @@ func where_is(something):
     if (units_on_map[coordinate] == something):
       return coordinate
   return null
+
+func terrain_type_at(map_coordinate):
+  var cell_type = get_cellv(map_coordinate) 
+  if (cell_type < 0):
+    return "no terrain"
+  return tiles_db[cell_type].terrain_name
 
 func fill_navigation_info():
   var max_map_size = 30

@@ -13,6 +13,8 @@ var game = Game.new()
 var selected_unit = null
 var animation_in_progress = false
 
+var last_hovered_cell = null
+
 func _ready():
   var root = get_tree().get_root()
   units = root.get_node("HexMap/Units")
@@ -53,12 +55,14 @@ func _unhandled_input(event):
     var corrected_mouse_position = get_global_mouse_position()
     # corrected_mouse_position = event.position
     var hit = terrain.detect_cell_under_mouse(corrected_mouse_position)
-    interface.describe_cell(hit)
-    if (selected_unit != null): # TODO ... and the current cell did not change
-      var target = terrain.what_is_at(hit)
-      if (target == null):
-        var planned_path = terrain.plot_unit_path(selected_unit, hit)
-        interface.plot_movement(planned_path)
+    if (last_hovered_cell != hit): # Change info when going out of the cell.
+      last_hovered_cell = hit
+      interface.describe_cell(hit)
+      if (selected_unit != null): # TODO ... and the current cell did not change
+        var target = terrain.what_is_at(hit)
+        if (target == null):
+          var planned_path = terrain.plot_unit_path(selected_unit, hit)
+          interface.plot_movement(planned_path)
     
   # What you do on a click will, eventually 
   # depend on what is under the cursor and the status.
