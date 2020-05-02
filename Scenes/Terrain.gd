@@ -219,3 +219,4 @@ func distance_between(unit_a, unit_b):
   
   var path = shortest_path.get_point_path(start, end)
   return path.size() -2 # "Discount" the start and end cells.
+

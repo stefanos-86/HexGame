@@ -124,7 +124,8 @@ func move_unit(unit, destination):
   interface.animate_movement(unit, planned_path)
   terrain.move(unit, destination)
 
-func _on_Transporter_movement_animation_done():
+func reactivate_input():
+  print("Input activated")
   animation_in_progress = false
 
 func shoot(attacker, target):
@@ -133,10 +134,9 @@ func shoot(attacker, target):
   print(game.fire_outcome.keys()[attack_result])
   
   interface.animate_attack(attacker, target, attack_result)
-  # TODO: remove target from map at the end of the animation...
-  # May use another transporter or a different signal to know
-  # what to do post-animation. Or bake the target removal
-  # in the animation.
+
+func after_shoot():
+  reactivate_input()
 
 func turn_towards(position):
   selected_unit.look_at(position)

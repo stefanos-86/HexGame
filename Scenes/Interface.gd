@@ -1,9 +1,10 @@
 extends Control
 
+signal movement_completed
+signal explosion_completed
+
 var terrain
 var units
-
-var moving_unit
 
 # Controls the camera zoom. Big number, big field of view
 # (increase the level to zoom out).
@@ -14,6 +15,8 @@ const pan_step = 20
 
 var cam_lim_top
 var cam_lim_bottom
+
+var rng = RandomNumberGenerator.new()
 
 var g = preload("res://FreeScripts/Game.gd")
 var colors_for_factions = {
@@ -26,6 +29,7 @@ func _ready():
   var root = get_tree().get_root()
   terrain = root.get_node("HexMap/Terrain")
   units = root.get_node("HexMap/Units")
+  rng.randomize()
   
   compute_pan_limits()
   pan_up() # Ensure the camera gets re-positioned within the limits.
@@ -41,22 +45,14 @@ func animate_movement(unit, path):
     
   units.remove_child(unit)
   var transporter = $MovementPath/PathFollow2D/Transporter
-  unit.position = Vector2(0, 0)
-  unit.set_rotation(0)
-  transporter.add_child(unit)
-  moving_unit = unit # Store it so we can get it back in the animation callback.
+
   transporter.reset_at_start(distance_to_cover, 120, "movement_animation_done", unit)  
   
-func _on_Transporter_movement_animation_done():
-  if (moving_unit == $MovementPath/PathFollow2D/Transporter/Missile):
-    moving_unit.set_visible(false)
-  else:
-    var transporter = $MovementPath/PathFollow2D/Transporter
-    transporter.remove_child(moving_unit)
-    units.add_child(moving_unit)
-    moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
-    moving_unit.set_position($MovementPath/PathFollow2D.get_position());
-    moving_unit = null
+func complete_movement_animation(moving_unit):
+  units.add_child(moving_unit)
+  moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
+  moving_unit.set_position($MovementPath/PathFollow2D.get_position());
+  emit_signal("movement_completed")
   
 func animate_attack(attacker, target, outcome):
   attacker.rotate_turret_towards(target.position)
@@ -65,17 +61,27 @@ func animate_attack(attacker, target, outcome):
   
   var attack_from = terrain.cell_to_world(terrain.where_is(attacker))
   var attack_to = terrain.cell_to_world(terrain.where_is(target))
+  
+  $Explosion.position = attack_to
+  if outcome == g.fire_outcome.MISS:
+    var fudge_angle = rng.randf_range(0, PI * 2)
+    var fudge_vector = Vector2(30, 0)
+    fudge_vector.rotated(fudge_angle)
+    $Explosion.position += fudge_vector
+  
   $MovementPath.curve.add_point(attack_from)
   $MovementPath.curve.add_point(attack_to)
     
   var distance_to_cover = $MovementPath.curve.get_baked_length()
     
-  var missile = $MovementPath/PathFollow2D/Transporter/Missile
-  missile.set_position(Vector2(0, 0))
-  missile.set_rotation(0)
-  missile.set_visible(true)
-  moving_unit = missile
-  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300, "movement_animation_done", missile)  
+  var m = $Missile
+  remove_child(m)
+  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300, "start_explosion_animation", m)  
+
+func animate_explosion(unit):
+  add_child(unit)
+  $Explosion/AnimationPlayer.play("ExplosionAnimation")
+  emit_signal("explosion_completed")
 
 func zoom_out():
   change_zoom(1.1)
@@ -179,3 +185,6 @@ func unmark(unit):
   unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
   
+
+
+
