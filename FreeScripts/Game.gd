@@ -67,9 +67,8 @@ func fire(shooter, target, terrain):
   var distance = terrain.distance_between(shooter, target)
   var hit_p = hit_probability(shooter, target, distance)
 
-  #if rng.randf() * 100 > hit_p:
-  #  print ("Missed")
-  #  return fire_outcome.MISS
+  if rng.randf() * 100 > hit_p:
+    return fire_outcome.MISS
     
   var shot_strength = distance_penalty(shooter.gun_penetration_power, distance, shooter.gun_max_range) 
   

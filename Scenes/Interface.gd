@@ -65,12 +65,11 @@ func animate_attack(attacker, target, outcome):
   $Explosion.position = attack_to
   if outcome == g.fire_outcome.MISS:
     var fudge_angle = rng.randf_range(0, PI * 2)
-    var fudge_vector = Vector2(30, 0)
-    fudge_vector.rotated(fudge_angle)
+    var fudge_vector = Vector2(30, 0).rotated(fudge_angle)
     $Explosion.position += fudge_vector
   
   $MovementPath.curve.add_point(attack_from)
-  $MovementPath.curve.add_point(attack_to)
+  $MovementPath.curve.add_point($Explosion.position)
     
   var distance_to_cover = $MovementPath.curve.get_baked_length()
     
