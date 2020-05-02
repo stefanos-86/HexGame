@@ -81,7 +81,6 @@ editor_draw_limits = true
 [node name="L" type="CanvasLayer" parent="Interface/Camera"]
 
 [node name="SidebarBackground" type="Panel" parent="Interface/Camera/L"]
-visible = false
 anchor_left = 0.8
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -294,6 +293,7 @@ text = "Center"
 margin_top = 574.0
 margin_right = 256.0
 margin_bottom = 600.0
+hint_tooltip = "End of turn - Shift + Enter"
 text = "End Turn"
 
 [node name="View" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
@@ -330,6 +330,7 @@ text = "Zoom Out"
 margin_top = 30.0
 margin_right = 93.0
 margin_bottom = 56.0
+hint_tooltip = "Pan Up - W - Up arrow"
 text = "Pan Up"
 
 [node name="PanDown" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
@@ -337,12 +338,14 @@ margin_left = 97.0
 margin_top = 30.0
 margin_right = 199.0
 margin_bottom = 56.0
+hint_tooltip = "Pan Down - S - Down arrow"
 text = "Pan Down"
 
 [node name="PanL" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
 margin_top = 60.0
 margin_right = 93.0
 margin_bottom = 86.0
+hint_tooltip = "Pan Left - A - Left arrow"
 text = "Pan Left"
 
 [node name="PanR" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
@@ -350,6 +353,7 @@ margin_left = 97.0
 margin_top = 60.0
 margin_right = 199.0
 margin_bottom = 86.0
+hint_tooltip = "Pan Right - D - Right arrow"
 text = "Pan Right"
 
 [node name="Admin" type="PanelContainer" parent="Interface/Camera/L/Sidebar"]
@@ -387,8 +391,41 @@ margin_right = 250.0
 margin_bottom = 26.0
 hint_tooltip = "Esc"
 text = "Quit"
+
+[node name="VictoryBox" type="PanelContainer" parent="Interface/Camera/L"]
+margin_right = 318.0
+margin_bottom = 127.0
+theme = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CenterContainer" type="CenterContainer" parent="Interface/Camera/L/VictoryBox"]
+margin_left = 3.0
+margin_top = 5.0
+margin_right = 315.0
+margin_bottom = 122.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Interface/Camera/L/VictoryBox/CenterContainer"]
+margin_left = 50.0
+margin_top = 33.0
+margin_right = 261.0
+margin_bottom = 83.0
+
+[node name="Label" type="Label" parent="Interface/Camera/L/VictoryBox/CenterContainer/VBoxContainer"]
+margin_right = 211.0
+margin_bottom = 20.0
+text = "The RED faction wins!"
+
+[node name="Quit" type="Button" parent="Interface/Camera/L/VictoryBox/CenterContainer/VBoxContainer"]
+margin_top = 24.0
+margin_right = 211.0
+margin_bottom = 50.0
+hint_tooltip = "Esc"
+text = "Quit"
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="_on_Transporter_movement_animation_done"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Control" method="_on_Transporter_movement_animation_done"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/TurnButton" to="Control" method="next_turn"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomIn" to="Interface" method="zoom_in"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomOut" to="Interface" method="zoom_out"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanUp" to="Interface" method="pan_up"]
@@ -396,3 +433,4 @@ text = "Quit"
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanL" to="Interface" method="pan_left"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/PanR" to="Interface" method="pan_right"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Admin/HC2/Quit" to="Control" method="shutdown"]
+[connection signal="pressed" from="Interface/Camera/L/VictoryBox/CenterContainer/VBoxContainer/Quit" to="Control" method="shutdown"]

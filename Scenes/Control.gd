@@ -2,9 +2,13 @@ extends Control
 
 # This is the place where we deal with the input.
 
+var Game = preload("res://FreeScripts//Game.gd")
+
 var terrain
 var units
 var interface
+
+var game = Game.new()
 
 var selected_unit = null
 var animation_in_progress = false
@@ -14,6 +18,10 @@ func _ready():
   units = root.get_node("HexMap/Units")
   terrain = root.get_node("HexMap/Terrain")
   interface = root.get_node("HexMap/Interface")
+  
+  game.begin_game()
+  interface.refresh_turn_info(game)
+  
 
 func _unhandled_input(event):
   if(event.is_action("Shutdown")):
@@ -22,6 +30,8 @@ func _unhandled_input(event):
   # Block input when things are moving.
   if (animation_in_progress):
     return
+    
+  var just_pressed = event.is_pressed() and not event.is_echo()
     
   if(event.is_action("ZoomIn")):
     interface.zoom_in()
@@ -35,6 +45,8 @@ func _unhandled_input(event):
     interface.pan_left()
   elif (event.is_action("PanRight")):
     interface.pan_right()
+  elif (event.is_action("NextTurn") and just_pressed):
+    next_turn()
     
     
   if event is InputEventMouseMotion:
@@ -107,3 +119,7 @@ func shoot(attacker, target):
   # May use another transporter or a different signal to know
   # what to do post-animation. Or bake the target removal
   # in the animation.
+
+func next_turn():
+  game.next_turn()
+  interface.refresh_turn_info(game)

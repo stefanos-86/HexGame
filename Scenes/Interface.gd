@@ -1,6 +1,5 @@
 extends Control
 
-var factions = preload("res://FreeScripts/Factions.gd")
 
 var terrain
 var units
@@ -17,9 +16,10 @@ const pan_step = 20
 var cam_lim_top
 var cam_lim_bottom
 
+var g = preload("res://FreeScripts/Game.gd")
 var colors_for_factions = {
-  factions.names.RED: Color(1, 0, 0),
-  factions.names.BLUE: Color(0, 0, 1),
+  g.factions.RED: Color(1, 0.4, 0.4),
+  g.factions.BLUE: Color(0.4, 0.4, 1),
  }
 var color_for_highlight = Color(1, 1, 0)
 
@@ -31,6 +31,7 @@ func _ready():
   compute_pan_limits()
   pan_up() # Ensure the camera gets re-positioned within the limits.
 
+  
 func describe_cell(cell_coordinates):
   var unit = terrain.what_is_at(cell_coordinates)
   
@@ -150,4 +151,11 @@ func compute_pan_limits():
   cam_lim_bottom = Vector2(min_extent.x, min_extent.y)
   cam_lim_top = Vector2(max_extent.x + covered_by_sidebar, max_extent.y)
 
-
+func refresh_turn_info(game):
+  var player = game.current_player_name()
+  var turn = game.turn_count
+  var color = colors_for_factions[game.current_player]
+  var turn_info = "Turn {0} - {1}.".format([turn, player])
+  
+  $Camera/L/Sidebar/Turn.modulate = color
+  $Camera/L/Sidebar/Turn/TurnInformation.text = turn_info
