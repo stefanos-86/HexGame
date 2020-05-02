@@ -53,16 +53,26 @@ func _unhandled_input(event):
     
   if event is InputEventMouseMotion:
     var corrected_mouse_position = get_global_mouse_position()
-    # corrected_mouse_position = event.position
     var hit = terrain.detect_cell_under_mouse(corrected_mouse_position)
-    if (last_hovered_cell != hit): # Change info when going out of the cell.
+    
+    # Change the info only when needed, when a new cell is under the cursor.
+    if (last_hovered_cell != hit): 
       last_hovered_cell = hit
-      interface.describe_cell(hit)
-      if (selected_unit != null): # TODO ... and the current cell did not change
+      
+ 
+      var distance = null
+      var hit_probability = null
+      
+      if (selected_unit != null):
         var target = terrain.what_is_at(hit)
         if (target == null):
           var planned_path = terrain.plot_unit_path(selected_unit, hit)
           interface.plot_movement(planned_path)
+        else:
+          distance = terrain.distance_between(selected_unit, target)
+      
+      interface.describe_cell(hit, distance, hit_probability)
+      
     
 
   if event is InputEventMouseButton:

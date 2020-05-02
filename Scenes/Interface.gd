@@ -32,22 +32,22 @@ func _ready():
   pan_up() # Ensure the camera gets re-positioned within the limits.
 
   
-func describe_cell(map_coordinates):
+func describe_cell(map_coordinates, distance, hit_prob):
   $CellCursor.position = terrain.cell_to_world(map_coordinates)
   
   var terrain_type = terrain.terrain_type_at(map_coordinates)
   var terrain_desc = "({0}, {1}) - {2}".format([map_coordinates.x, map_coordinates.y, terrain_type])
   $Camera/L/Sidebar/Descriptions/VB/CellDescription.text = terrain_desc
-  
-  
-  var unit = terrain.what_is_at(map_coordinates)
-  
-  var unit_description = "No one is there."
-  if unit != null:
-    pass #unit_description = str(unit.name) + " " + unit.unit_name
-  
-  #$Camera/L/Sidebar/CellDescription.text = str(map_coordinates) + " " + unit_description
-  
+    
+  var target = terrain.what_is_at(map_coordinates)
+  var target_desc = ""
+  if target != null:
+    target_desc = target.type
+    
+    if distance != null:
+      target_desc += ", %s hexes" % distance
+      
+  $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
   
   
 func mark_as_selected(unit):
