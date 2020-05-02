@@ -44,23 +44,24 @@ func describe_cell(map_coordinates):
   
   var unit_description = "No one is there."
   if unit != null:
-    unit_description = str(unit.name) + " " + unit.unit_name
+    pass #unit_description = str(unit.name) + " " + unit.unit_name
   
   #$Camera/L/Sidebar/CellDescription.text = str(map_coordinates) + " " + unit_description
   
   
   
 func mark_as_selected(unit):
-  # I could keep the highlight in the interface, but
-  # I believe it is more practial this way.
-  # Every unit has to have a marker...
   unit.get_node("Highlight").modulate =  color_for_highlight
-    
+  
+  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.shot_points])
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
+  
 func unmark(unit):
   # This must be dealth with by the unit itself: the color
   # depends on the faction it belongs to!
   unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
-
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
+  
 func plot_movement(path):  
   $PlannedPath.clear_points ()
   

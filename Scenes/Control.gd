@@ -64,9 +64,8 @@ func _unhandled_input(event):
           var planned_path = terrain.plot_unit_path(selected_unit, hit)
           interface.plot_movement(planned_path)
     
-  # What you do on a click will, eventually 
-  # depend on what is under the cursor and the status.
-  if (event is InputEventMouseButton):
+
+  if event is InputEventMouseButton:
     if event.is_pressed():
       if event.button_index == BUTTON_LEFT:
         var corrected_mouse_position = get_global_mouse_position()
@@ -77,6 +76,8 @@ func _unhandled_input(event):
           var target = terrain.what_is_at(hit)
           if (target == null):
             move_unit(selected_unit, hit)
+          elif target.belongs_to(game.current_player):
+            select_unit_in_cell(hit)
           else:
             shoot(selected_unit, target)
           
@@ -89,18 +90,16 @@ func shutdown():
 
 
 func select_unit_in_cell(hit):
-  unselect_current_unit()
-  
   var unit = terrain.what_is_at(hit)
       
-  if (unit != null):
+  if unit != null and unit.belongs_to(game.current_player):
+    unselect_current_unit()
     interface.mark_as_selected(unit)
     selected_unit = unit
      
 func unselect_current_unit():
   if (selected_unit != null):
     interface.unmark(selected_unit)
-  
   selected_unit = null
 
   
