@@ -31,44 +31,6 @@ func _ready():
   compute_pan_limits()
   pan_up() # Ensure the camera gets re-positioned within the limits.
 
-  
-func describe_cell(map_coordinates, distance, hit_prob):
-  $CellCursor.position = terrain.cell_to_world(map_coordinates)
-  
-  var terrain_type = terrain.terrain_type_at(map_coordinates)
-  var terrain_desc = "({0}, {1}) - {2}".format([map_coordinates.x, map_coordinates.y, terrain_type])
-  $Camera/L/Sidebar/Descriptions/VB/CellDescription.text = terrain_desc
-    
-  var target = terrain.what_is_at(map_coordinates)
-  var target_desc = ""
-  if target != null:
-    target_desc = target.type
-    
-    if distance != null:
-      target_desc += ", %s hexes" % distance
-      
-  $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
-  
-  
-func mark_as_selected(unit):
-  unit.get_node("Highlight").modulate =  color_for_highlight
-  
-  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.shot_points])
-  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
-  
-func unmark(unit):
-  # This must be dealth with by the unit itself: the color
-  # depends on the faction it belongs to!
-  unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
-  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
-  
-func plot_movement(path):  
-  $PlannedPath.clear_points ()
-  
-  var id = 0
-  for point in path:
-    $PlannedPath.add_point(terrain.cell_to_world(point), id)
-    id += 1
 
 func animate_movement(unit, path):
   $MovementPath.curve.clear_points()
@@ -167,3 +129,50 @@ func refresh_turn_info(game):
   
   $Camera/L/Sidebar/Turn.modulate = color
   $Camera/L/Sidebar/Turn/TurnInformation.text = turn_info
+
+
+func clear_movement_plot():
+  $PlannedPath.clear_points ()
+  
+func plot_movement(path):  
+  clear_movement_plot()
+  
+  var id = 0
+  for point in path:
+    $PlannedPath.add_point(terrain.cell_to_world(point), id)
+    id += 1
+
+ 
+func describe_cell(map_coordinates, distance, hit_probability):
+  $CellCursor.position = terrain.cell_to_world(map_coordinates)
+  
+  var terrain_type = terrain.terrain_type_at(map_coordinates)
+  var terrain_desc = "({0}, {1}) - {2}".format([map_coordinates.x, map_coordinates.y, terrain_type])
+  $Camera/L/Sidebar/Descriptions/VB/CellDescription.text = terrain_desc
+    
+  var target = terrain.what_is_at(map_coordinates)
+  var target_desc = ""
+  if target != null:
+    target_desc = target.type
+    
+    if distance != null:
+      target_desc += ", %s hexes" % distance
+      
+    if hit_probability != null:
+      target_desc += ", %s %%" % hit_probability
+      
+  $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
+  
+  
+func mark_as_selected(unit):
+  unit.get_node("Highlight").modulate =  color_for_highlight
+  
+  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.shot_points])
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
+  
+func unmark(unit):
+  # This must be dealth with by the unit itself: the color
+  # depends on the faction it belongs to!
+  unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
+  

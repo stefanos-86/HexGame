@@ -58,7 +58,7 @@ func _unhandled_input(event):
     # Change the info only when needed, when a new cell is under the cursor.
     if (last_hovered_cell != hit): 
       last_hovered_cell = hit
-      
+      interface.clear_movement_plot()
  
       var distance = null
       var hit_probability = null
@@ -70,7 +70,8 @@ func _unhandled_input(event):
           interface.plot_movement(planned_path)
         else:
           distance = terrain.distance_between(selected_unit, target)
-      
+          hit_probability = game.hit_probability(selected_unit, target, distance)
+          
       interface.describe_cell(hit, distance, hit_probability)
       
     
