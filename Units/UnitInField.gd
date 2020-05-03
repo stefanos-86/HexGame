@@ -5,7 +5,7 @@ var faction
 var type
 
 var move_points
-var shot_points
+var fire_points
 
 var speed
 

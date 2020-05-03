@@ -193,9 +193,14 @@ func describe_cell(map_coordinates, distance, hit_probability):
   
 func mark_as_selected(unit):
   unit.get_node("Highlight").modulate =  color_for_highlight
+  refresh_unit_description(unit)
   
-  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.shot_points])
+func refresh_unit_description(unit):
+  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.fire_points])
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
+  
+func no_fire_points():
+  $Camera/L/Sidebar/Descriptions/VB/ActionResults.text = "Must reload!"
   
 func unmark(unit):
   # This must be dealth with by the unit itself: the color

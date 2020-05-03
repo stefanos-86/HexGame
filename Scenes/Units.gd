@@ -21,7 +21,7 @@ func _ready():
   var unit_to_place = tank_scene.instance()
   unit_to_place.faction = game.factions.RED
   unit_to_place.move_points = 10
-  unit_to_place.shot_points = 2
+  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank"
   unit_to_place.speed = game.speed_levels.SLOW
   unit_to_place.gun_max_range = 15
@@ -35,7 +35,7 @@ func _ready():
   unit_to_place = tank_scene.instance()
   unit_to_place.faction = game.factions.RED
   unit_to_place.move_points = 10
-  unit_to_place.shot_points = 2
+  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank 2"
   unit_to_place.speed = game.speed_levels.FAST
   unit_to_place.armour_thickness = standard_armour
@@ -48,7 +48,7 @@ func _ready():
   
   unit_to_place = tank_scene.instance()
   unit_to_place.move_points = 10
-  unit_to_place.shot_points = 2
+  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank"
   unit_to_place.speed = game.speed_levels.STATIONARY
   unit_to_place.faction = game.factions.BLUE
@@ -69,3 +69,8 @@ func count_units_of(player):
 
 func mark_destruction(unit):
   order_of_battle.erase(unit)
+
+func reload_all_points():
+  for u in order_of_battle:
+    u.fire_points = 2
+    u.move_points = 10

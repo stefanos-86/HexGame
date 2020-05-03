@@ -31,6 +31,8 @@ func _unhandled_input(event):
     shutdown()
     
   # Block input when things are moving.
+  # TODO: the input in the side bar has been already
+  # handled!!! The signal will bypass this.
   if (animation_in_progress):
     return
     
@@ -130,8 +132,13 @@ func reactivate_input():
   animation_in_progress = false
 
 func shoot(attacker, target):
+  if attacker.fire_points == 0:
+    interface.no_fire_points()
+    return
+  
   animation_in_progress = true
   var attack_result = game.fire(attacker, target, terrain)
+  attacker.fire_points -= 1
   
   # Save the target to be erased after the animation is completed-
   # Everything else is a parameter of the signals, but I could not find
@@ -140,6 +147,7 @@ func shoot(attacker, target):
   if attack_result.final_result == game.fire_outcome.DESTROYED:
     target_to_destroy = target
     
+  interface.refresh_unit_description(attacker)
   interface.animate_attack(attacker, target, attack_result)
 
 func after_shoot():
@@ -150,9 +158,10 @@ func after_shoot():
      
     var enemies_left = units.count_units_of(target_to_destroy.faction)
     if enemies_left == 0:
-      interface.victory(game.current_player)
       animation_in_progress = true # Re-block input.
-  
+      interface.victory(game.current_player)
+      return # End game, nothing left to do.
+      
     target_to_destroy = null
   reactivate_input()
 
@@ -164,4 +173,7 @@ func turn_towards(position):
 func next_turn():
   unselect_current_unit()
   game.next_turn()
+  units.reload_all_points()
+  interface.clear_action_descritpion()
+  interface.clear_movement_plot()
   interface.refresh_turn_info(game)
