@@ -209,3 +209,9 @@ func clear_action_descritpion():
 func mark_destruction(unit):
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = ""
   unit.get_node("Highlight").modulate = color_for_destruction
+
+func victory(winner):
+  var message = "Battle finished: %s victory." % g.factions.keys()[winner]
+  $Camera/L/VictoryBox/CenterContainer/VBoxContainer/Winner.text = message
+  $Camera/L/VictoryBox.visible = true
+  # And this is it: the box has a quit button, the only thing you can push.

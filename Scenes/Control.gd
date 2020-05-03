@@ -147,9 +147,13 @@ func after_shoot():
     target_to_destroy.mark_destruction()
     interface.mark_destruction(target_to_destroy)
     units.mark_destruction(target_to_destroy)
+     
+    var enemies_left = units.count_units_of(target_to_destroy.faction)
+    if enemies_left == 0:
+      interface.victory(game.current_player)
+      animation_in_progress = true # Re-block input.
+  
     target_to_destroy = null
-  
-  
   reactivate_input()
 
 func turn_towards(position):
