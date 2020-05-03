@@ -9,6 +9,8 @@ var shot_points
 
 var speed
 
+var alive = true
+
 # TODO: this values belong to the type of the unit.
 # They do not change when fielding it. The gun has been installed
 # in the tank factory; deploying the vehicle has no effect.
@@ -22,3 +24,7 @@ func belongs_to(player):
   
 func rotate_turret_towards(point):
   $Tank_turret.look_at(point)
+
+func mark_destruction():
+  alive = false
+  $Destroyed.visible = true

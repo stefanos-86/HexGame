@@ -20,6 +20,10 @@ enum armor_part {
   REAR
  }
   
+class FireEffect:
+  var armor_part_hit = null
+  var final_result = null
+ 
 var first_player_in_turn
 var current_player
 var turn_count
@@ -64,11 +68,14 @@ func movement_accuracy_penalty(base_hit_probability, speed):
   return base_hit_probability
     
 func fire(shooter, target, terrain):
+  var effect = FireEffect.new()
+  
   var distance = terrain.distance_between(shooter, target)
   var hit_p = hit_probability(shooter, target, distance)
 
   if rng.randf() * 100 > hit_p:
-    return fire_outcome.MISS
+    effect.final_result = fire_outcome.MISS
+    return effect
     
   var shot_strength = distance_penalty(shooter.gun_penetration_power, distance, shooter.gun_max_range) 
   
@@ -100,14 +107,17 @@ func fire(shooter, target, terrain):
   elif bearing > 0.25 and bearing < 0.75:
     armor_part_hit = armor_part.FRONT
   
+  effect.armor_part_hit = armor_part_hit
+  
   print (armor_part.keys()[armor_part_hit])
   print (shot_strength, " vs ", target.armour_thickness[armor_part_hit])
   
   if shot_strength > target.armour_thickness[armor_part_hit]:
-    return fire_outcome.DESTROYED
-    
-  return fire_outcome.INEFFECTIVE
+    effect.final_result = fire_outcome.DESTROYED
+  else:
+    effect.final_result = fire_outcome.INEFFECTIVE
   
+  return effect
 
 # max_distance = range where the values goes to 0.
 func distance_penalty(value_at_no_distance, distance, max_distance):

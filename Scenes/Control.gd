@@ -12,6 +12,7 @@ var game = Game.new()
 
 var selected_unit = null
 var animation_in_progress = false
+var target_to_destroy = null
 
 var last_hovered_cell = null
 
@@ -65,7 +66,7 @@ func _unhandled_input(event):
       
       if (selected_unit != null):
         var target = terrain.what_is_at(hit)
-        if (target == null):
+        if target == null or target.alive == false:
           var planned_path = terrain.plot_unit_path(selected_unit, hit)
           interface.plot_movement(planned_path)
         else:
@@ -78,6 +79,7 @@ func _unhandled_input(event):
 
   if event is InputEventMouseButton:
     if event.is_pressed():
+      interface.clear_action_descritpion()
       if event.button_index == BUTTON_LEFT:
         var corrected_mouse_position = get_global_mouse_position()
         var hit = terrain.detect_cell_under_mouse(corrected_mouse_position)
@@ -85,7 +87,7 @@ func _unhandled_input(event):
           select_unit_in_cell(hit)
         else:
           var target = terrain.what_is_at(hit)
-          if (target == null):
+          if target == null or target.alive == false:
             move_unit(selected_unit, hit)
           elif target.belongs_to(game.current_player):
             select_unit_in_cell(hit)
@@ -107,7 +109,7 @@ func shutdown():
 func select_unit_in_cell(hit):
   var unit = terrain.what_is_at(hit)
       
-  if unit != null and unit.belongs_to(game.current_player):
+  if unit != null and unit.alive and unit.belongs_to(game.current_player):
     unselect_current_unit()
     interface.mark_as_selected(unit)
     selected_unit = unit
@@ -125,23 +127,37 @@ func move_unit(unit, destination):
   terrain.move(unit, destination)
 
 func reactivate_input():
-  print("Input activated")
   animation_in_progress = false
 
 func shoot(attacker, target):
   animation_in_progress = true
   var attack_result = game.fire(attacker, target, terrain)
-  print(game.fire_outcome.keys()[attack_result])
   
+  # Save the target to be erased after the animation is completed-
+  # Everything else is a parameter of the signals, but I could not find
+  # an easy way to pass everything around. I have to think of some
+  # kind of method...
+  if attack_result.final_result == game.fire_outcome.DESTROYED:
+    target_to_destroy = target
+    
   interface.animate_attack(attacker, target, attack_result)
 
 func after_shoot():
+  if target_to_destroy != null:
+    target_to_destroy.mark_destruction()
+    interface.mark_destruction(target_to_destroy)
+    units.mark_destruction(target_to_destroy)
+    target_to_destroy = null
+  
+  
   reactivate_input()
 
 func turn_towards(position):
-  selected_unit.look_at(position)
-  selected_unit.rotate_turret_towards(position)
+  if selected_unit != null:
+    selected_unit.look_at(position)
+    selected_unit.rotate_turret_towards(position)
 
 func next_turn():
+  unselect_current_unit()
   game.next_turn()
   interface.refresh_turn_info(game)

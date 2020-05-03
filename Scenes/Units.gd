@@ -63,6 +63,9 @@ func _ready():
 func count_units_of(player):
   var counter = 0
   for u in order_of_battle:
-    if u.faction == player:
+    if u.faction == player and u.alive == true:
       counter += 1
   return counter
+
+func mark_destruction(unit):
+  order_of_battle.erase(unit)

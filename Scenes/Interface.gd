@@ -24,6 +24,12 @@ var colors_for_factions = {
   g.factions.BLUE: Color(0.4, 0.4, 1),
  }
 var color_for_highlight = Color(1, 1, 0)
+var color_for_destruction = Color(0.2, 0.2, 0.2)
+var colors_for_fire = {
+  g.fire_outcome.MISS: Color(1, 0.4, 0.4),
+  g.fire_outcome.INEFFECTIVE: Color(1, 0.5, 0),
+  g.fire_outcome.DESTROYED: Color(0.4, 1, 0.4),
+ }
 
 func _ready():
   var root = get_tree().get_root()
@@ -63,7 +69,7 @@ func animate_attack(attacker, target, outcome):
   var attack_to = terrain.cell_to_world(terrain.where_is(target))
   
   $Explosion.position = attack_to
-  if outcome == g.fire_outcome.MISS:
+  if outcome.final_result == g.fire_outcome.MISS:
     var fudge_angle = rng.randf_range(0, PI * 2)
     var fudge_vector = Vector2(30, 0).rotated(fudge_angle)
     $Explosion.position += fudge_vector
@@ -75,10 +81,20 @@ func animate_attack(attacker, target, outcome):
     
   var m = $Missile
   remove_child(m)
-  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 300, "start_explosion_animation", m)  
-
-func animate_explosion(unit):
-  add_child(unit)
+  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 500, "start_explosion_animation", m)  
+  
+  var message = "Missed!"
+  if outcome.final_result != g.fire_outcome.MISS:
+    var hit_name = g.armor_part.keys()[outcome.armor_part_hit]
+    var result_name = g.fire_outcome.keys()[outcome.final_result]
+    message = "{0} hit: {1}.".format([hit_name, result_name])
+  
+  var action_label = $Camera/L/Sidebar/Descriptions/VB/ActionResults
+  action_label.text = message
+  action_label.modulate = colors_for_fire[outcome.final_result]
+  
+func animate_explosion(missile):
+  add_child(missile)
   $Explosion/AnimationPlayer.play("ExplosionAnimation")
   emit_signal("explosion_completed")
 
@@ -163,11 +179,14 @@ func describe_cell(map_coordinates, distance, hit_probability):
   if target != null:
     target_desc = target.type
     
-    if distance != null:
-      target_desc += ", %s hexes" % distance
+    if target.alive == true:
+      if distance != null:
+        target_desc += ", %s hexes" % distance
       
-    if hit_probability != null:
-      target_desc += ", %s %%" % hit_probability
+      if hit_probability != null:
+        target_desc += ", %s %%" % hit_probability
+    else:
+      target_desc += ", Destroyed."
       
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
   
@@ -184,6 +203,9 @@ func unmark(unit):
   unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
   
+func clear_action_descritpion():
+  $Camera/L/Sidebar/Descriptions/VB/ActionResults.text = ""
 
-
-
+func mark_destruction(unit):
+  $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = ""
+  unit.get_node("Highlight").modulate = color_for_destruction

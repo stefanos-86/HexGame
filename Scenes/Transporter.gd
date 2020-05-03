@@ -29,7 +29,7 @@ func reset_at_start(distance_to_cover, speed, callback, moving_obj):
   add_child(moving_object)
 
 func _physics_process(delta):
-  if (not moving):
+  if not moving:
    return
   
   var new_offset = follow_me.get_offset () + animation_speed * delta  
