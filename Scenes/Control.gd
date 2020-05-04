@@ -125,8 +125,16 @@ func unselect_current_unit():
 func move_unit(unit, destination):
   animation_in_progress = true
   var planned_path = terrain.plot_unit_path(unit, destination)
-  interface.animate_movement(unit, planned_path)
-  terrain.move(unit, destination)
+  
+  var movement_result = game.movement(unit, planned_path, terrain)
+  print (movement_result.actual_path)
+  
+  if movement_result.actual_path == []:
+    animation_in_progress = false
+  else:
+    interface.animate_movement(unit, movement_result)
+    interface.refresh_unit_description(unit)
+    terrain.move(unit, movement_result.actual_path.back())
 
 func reactivate_input():
   animation_in_progress = false

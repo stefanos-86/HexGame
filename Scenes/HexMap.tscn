@@ -62,13 +62,12 @@ position = Vector2( 16, 48 )
 texture = ExtResource( 5 )
 
 [node name="PlannedPath" type="Line2D" parent="Interface"]
+default_color = Color( 0.980392, 1, 0.4, 0.592157 )
 
 [node name="MovementPath" type="Path2D" parent="Interface"]
 curve = SubResource( 1 )
 
 [node name="PathFollow2D" type="PathFollow2D" parent="Interface/MovementPath"]
-position = Vector2( 61.4936, -49.5784 )
-rotation = -0.567167
 
 [node name="Transporter" type="Node2D" parent="Interface/MovementPath/PathFollow2D"]
 script = ExtResource( 2 )
@@ -414,9 +413,9 @@ margin_right = 315.0
 margin_bottom = 122.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Interface/Camera/L/VictoryBox/CenterContainer"]
-margin_left = 50.0
+margin_left = 10.0
 margin_top = 33.0
-margin_right = 261.0
+margin_right = 301.0
 margin_bottom = 83.0
 
 [node name="Winner" type="Label" parent="Interface/Camera/L/VictoryBox/CenterContainer/VBoxContainer"]

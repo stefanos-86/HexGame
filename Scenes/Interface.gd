@@ -25,9 +25,10 @@ var colors_for_factions = {
  }
 var color_for_highlight = Color(1, 1, 0)
 var color_for_destruction = Color(0.2, 0.2, 0.2)
+var color_for_warning = Color(1, 0.5, 0)
 var colors_for_fire = {
   g.fire_outcome.MISS: Color(1, 0.4, 0.4),
-  g.fire_outcome.INEFFECTIVE: Color(1, 0.5, 0),
+  g.fire_outcome.INEFFECTIVE: color_for_warning,
   g.fire_outcome.DESTROYED: Color(0.4, 1, 0.4),
  }
 
@@ -41,9 +42,12 @@ func _ready():
   pan_up() # Ensure the camera gets re-positioned within the limits.
 
 
-func animate_movement(unit, path):
+func get_action_label():
+  return $Camera/L/Sidebar/Descriptions/VB/ActionResults
+
+func animate_movement(unit, move_effect):
   $MovementPath.curve.clear_points()
-  for p in path:
+  for p in move_effect.actual_path:
     var point_in_wc = terrain.cell_to_world(p)
     $MovementPath.curve.add_point(point_in_wc)
     
@@ -54,11 +58,20 @@ func animate_movement(unit, path):
 
   transporter.reset_at_start(distance_to_cover, 120, "movement_animation_done", unit)  
   
+  describe_movement_effect(move_effect)
+  
 func complete_movement_animation(moving_unit):
   units.add_child(moving_unit)
   moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
   moving_unit.set_position($MovementPath/PathFollow2D.get_position());
   emit_signal("movement_completed")
+  
+  
+func describe_movement_effect(move_effect):
+  if move_effect.final_result == g.movement_outcome.NO_MOVE_POINTS:
+    var action_label = get_action_label()
+    action_label.modulate = color_for_warning
+    action_label.text = "Need more fuel!"
   
 func animate_attack(attacker, target, outcome):
   attacker.rotate_turret_towards(target.position)
@@ -89,7 +102,7 @@ func animate_attack(attacker, target, outcome):
     var result_name = g.fire_outcome.keys()[outcome.final_result]
     message = "{0} hit: {1}.".format([hit_name, result_name])
   
-  var action_label = $Camera/L/Sidebar/Descriptions/VB/ActionResults
+  var action_label = get_action_label()
   action_label.text = message
   action_label.modulate = colors_for_fire[outcome.final_result]
   
@@ -200,7 +213,9 @@ func refresh_unit_description(unit):
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
   
 func no_fire_points():
-  $Camera/L/Sidebar/Descriptions/VB/ActionResults.text = "Must reload!"
+  var action_label = get_action_label()
+  action_label.modulate = color_for_warning
+  action_label.text = "Must reload!"
   
 func unmark(unit):
   # This must be dealth with by the unit itself: the color
@@ -209,7 +224,7 @@ func unmark(unit):
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
   
 func clear_action_descritpion():
-  $Camera/L/Sidebar/Descriptions/VB/ActionResults.text = ""
+  get_action_label().text = ""
 
 func mark_destruction(unit):
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = ""

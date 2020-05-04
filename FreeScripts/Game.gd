@@ -20,10 +20,21 @@ enum armor_part {
   REAR
  }
   
+enum movement_outcome {
+  ARRIVED_AT_DESTINATION,
+  NO_MOVE_POINTS,
+  ENGAGED_MID_WAY
+ }
+
+
 class FireEffect:
   var armor_part_hit = null
   var final_result = null
  
+class MoveEffect:
+  var actual_path = null
+  var final_result = null
+
 var first_player_in_turn
 var current_player
 var turn_count
@@ -123,3 +134,38 @@ func fire(shooter, target, terrain):
 func distance_penalty(value_at_no_distance, distance, max_distance):
   var distance_factor = clamp(float(distance) / max_distance, 0, 1)
   return lerp(value_at_no_distance, 0, distance_factor)
+
+
+# Walk the path one bit at a time and simulate things that can
+# happen when moving. Return a data structure that tells the results
+# of the movement, with the path actually travelled up to the available
+# move points and any engagement that may result along the way.
+func movement(unit, planned_path, terrain):
+  # First step: you are already there, so nothing to simulate or pay for.
+  # But the step is still part of the movement.
+  var step_counter = 0
+  var next_step = planned_path[step_counter]
+  var next_step_cost = terrain.movement_cost_for_position(next_step)
+  var actual_path = [next_step]
+  step_counter += 1
+  
+  while next_step_cost <= unit.move_points and step_counter < planned_path.size():
+    next_step = planned_path[step_counter]
+    next_step_cost = terrain.movement_cost_for_position(next_step)
+    print ("Step cost ", next_step_cost)
+    actual_path.append(next_step)
+    unit.move_points -= next_step_cost
+    step_counter += 1
+    
+  var outcome = MoveEffect.new()
+  outcome.actual_path = actual_path
+  
+  if step_counter == planned_path.size():
+    outcome.final_result = movement_outcome.ARRIVED_AT_DESTINATION
+  else:
+    outcome.final_result = movement_outcome.NO_MOVE_POINTS
+  
+  return outcome
+    
+  
+  
