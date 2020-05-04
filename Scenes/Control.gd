@@ -145,9 +145,13 @@ func shoot(attacker, target):
     interface.no_fire_points()
     return
   
-  animation_in_progress = true
   var attack_result = game.fire(attacker, target, terrain)
-  attacker.fire_points -= 1
+  
+  if attack_result.final_result == game.fire_outcome.OUT_OF_RANGE:
+    interface.out_of_range()
+    return
+  
+  animation_in_progress = true
   
   # Save the target to be erased after the animation is completed-
   # Everything else is a parameter of the signals, but I could not find

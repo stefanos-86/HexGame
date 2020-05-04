@@ -11,6 +11,7 @@ enum speed_levels {
 enum fire_outcome {
   MISS,
   INEFFECTIVE,
+  OUT_OF_RANGE,
   DESTROYED
  }
 
@@ -82,8 +83,14 @@ func fire(shooter, target, terrain):
   var effect = FireEffect.new()
   
   var distance = terrain.distance_between(shooter, target)
+  
+  if distance > shooter.gun_max_range:
+    effect.final_result = fire_outcome.OUT_OF_RANGE
+    return effect
+  
+  shooter.fire_points -= 1
+  
   var hit_p = hit_probability(shooter, target, distance)
-
   if rng.randf() * 100 > hit_p:
     effect.final_result = fire_outcome.MISS
     return effect

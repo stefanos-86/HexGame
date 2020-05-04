@@ -15,7 +15,7 @@ var alive = true
 # They do not change when fielding it. The gun has been installed
 # in the tank factory; deploying the vehicle has no effect.
 # Same for the armor.
-var gun_max_range
+var gun_max_range = 12
 var gun_penetration_power = 450 # mm of steel at 90 degrees, point blank.
 var armour_thickness = {}
 var max_fire_points = 2

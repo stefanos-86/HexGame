@@ -29,6 +29,7 @@ var color_for_warning = Color(1, 0.5, 0)
 var colors_for_fire = {
   g.fire_outcome.MISS: Color(1, 0.4, 0.4),
   g.fire_outcome.INEFFECTIVE: color_for_warning,
+  g.fire_outcome.OUT_OF_RANGE: color_for_warning,
   g.fire_outcome.DESTROYED: Color(0.4, 1, 0.4),
  }
 
@@ -216,6 +217,11 @@ func no_fire_points():
   var action_label = get_action_label()
   action_label.modulate = color_for_warning
   action_label.text = "No fire points!"
+  
+func out_of_range():
+  var action_label = get_action_label()
+  action_label.modulate = color_for_warning
+  action_label.text = "Out of range!"
   
 func unmark(unit):
   # This must be dealth with by the unit itself: the color
