@@ -75,9 +75,11 @@ func _unhandled_input(event):
             var planned_path = terrain.plot_unit_path(selected_unit, hit)
             interface.plot_movement(planned_path)
           else:
-            distance = terrain.distance_between(selected_unit, target)
-            hit_probability = game.hit_probability(selected_unit, target, distance)
-          interface.describe_cell(hit, distance, hit_probability)
+            if not target.belongs_to(game.current_player):
+              distance = terrain.distance_between(selected_unit, target)
+              hit_probability = game.hit_probability(selected_unit, target, distance)
+          
+      interface.describe_cell(hit, distance, hit_probability)
         
 
   if event is InputEventMouseButton:

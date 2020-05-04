@@ -148,6 +148,12 @@ func distance_penalty(value_at_no_distance, distance, max_distance):
 # of the movement, with the path actually travelled up to the available
 # move points and any engagement that may result along the way.
 func movement(unit, planned_path, terrain):
+  if planned_path.size() < 1:
+    var outcome = MoveEffect.new()
+    outcome.actual_path = planned_path
+    outcome.final_result = movement_outcome.ARRIVED_AT_DESTINATION
+    return outcome
+  
   # First step: you are already there, so nothing to simulate or pay for.
   # But the step is still part of the movement.
   var step_counter = 0
@@ -158,7 +164,6 @@ func movement(unit, planned_path, terrain):
   var next_step_cost = terrain.movement_cost_for_position(next_step)
   
   while next_step_cost <= unit.move_points and step_counter < planned_path.size():
-    print (step_counter, " max " , planned_path.size())
     next_step = planned_path[step_counter]
     next_step_cost = terrain.movement_cost_for_position(next_step)
     actual_path.append(next_step)
@@ -181,7 +186,5 @@ func movement(unit, planned_path, terrain):
 func accelerate(unit):
   if unit.speed == speed_levels.STATIONARY:
     unit.speed = speed_levels.POP_OUT
-    print ("pop")
   else:
     unit.speed = speed_levels.SLOW # TODO: check movement settings.
-    print ("slow")

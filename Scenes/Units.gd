@@ -44,12 +44,13 @@ func _ready():
   unit_to_place.type = "Tank"
   unit_to_place.faction = game.factions.BLUE
   unit_to_place.armour_thickness = standard_armour
-  unit_to_place.reset_points()
   interface.unmark(unit_to_place) # Forces the color.
   terrain.emplace(unit_to_place, Vector2(15, 1))
   
   order_of_battle.append(unit_to_place)
   add_child(unit_to_place)
+  
+  reset_points_and_speed()  
 
 func count_units_of(player):
   var counter = 0

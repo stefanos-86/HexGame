@@ -18,7 +18,8 @@ class TerrainStats:
 # The keys are the tiles indexes.
 var tiles_db = {
   0: TerrainStats.new(1, "open grassland"), # Open terrain costs 1 movement point.
-  1: TerrainStats.new(TerrainStats.impassable, "deep water")  # Water is impassable.
+  1: TerrainStats.new(TerrainStats.impassable, "deep water"),  # Water is impassable.
+  2: TerrainStats.new(3, "soft mud"),
  }
 
 # I am not sure if this can easily handle the complex movement
