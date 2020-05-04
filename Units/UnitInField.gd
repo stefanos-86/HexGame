@@ -18,6 +18,8 @@ var alive = true
 var gun_max_range
 var gun_penetration_power = 450 # mm of steel at 90 degrees, point blank.
 var armour_thickness = {}
+var max_fire_points = 2
+var max_move_points = 8
 
 func belongs_to(player):
   return faction == player
@@ -28,3 +30,7 @@ func rotate_turret_towards(point):
 func mark_destruction():
   alive = false
   $Destroyed.visible = true
+  
+func reset_points():
+  move_points = max_move_points
+  fire_points = max_fire_points

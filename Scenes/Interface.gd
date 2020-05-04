@@ -71,7 +71,7 @@ func describe_movement_effect(move_effect):
   if move_effect.final_result == g.movement_outcome.NO_MOVE_POINTS:
     var action_label = get_action_label()
     action_label.modulate = color_for_warning
-    action_label.text = "Need more fuel!"
+    action_label.text = "No move points!"
   
 func animate_attack(attacker, target, outcome):
   attacker.rotate_turret_towards(target.position)
@@ -179,10 +179,10 @@ func plot_movement(path):
     $PlannedPath.add_point(terrain.cell_to_world(point), id)
     id += 1
 
+func put_cursor_at(map_coordinates):
+  $CellCursor.position = terrain.cell_to_world(map_coordinates)
  
 func describe_cell(map_coordinates, distance, hit_probability):
-  $CellCursor.position = terrain.cell_to_world(map_coordinates)
-  
   var terrain_type = terrain.terrain_type_at(map_coordinates)
   var terrain_desc = "({0}, {1}) - {2}".format([map_coordinates.x, map_coordinates.y, terrain_type])
   $Camera/L/Sidebar/Descriptions/VB/CellDescription.text = terrain_desc
@@ -215,7 +215,7 @@ func refresh_unit_description(unit):
 func no_fire_points():
   var action_label = get_action_label()
   action_label.modulate = color_for_warning
-  action_label.text = "Must reload!"
+  action_label.text = "No fire points!"
   
 func unmark(unit):
   # This must be dealth with by the unit itself: the color

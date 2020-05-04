@@ -145,17 +145,20 @@ func movement(unit, planned_path, terrain):
   # But the step is still part of the movement.
   var step_counter = 0
   var next_step = planned_path[step_counter]
-  var next_step_cost = terrain.movement_cost_for_position(next_step)
   var actual_path = [next_step]
+  
   step_counter += 1
+  var next_step_cost = terrain.movement_cost_for_position(next_step)
   
   while next_step_cost <= unit.move_points and step_counter < planned_path.size():
+    print (step_counter, " max " , planned_path.size())
     next_step = planned_path[step_counter]
     next_step_cost = terrain.movement_cost_for_position(next_step)
-    print ("Step cost ", next_step_cost)
     actual_path.append(next_step)
     unit.move_points -= next_step_cost
+    
     step_counter += 1
+    accelerate(unit)
     
   var outcome = MoveEffect.new()
   outcome.actual_path = actual_path
@@ -167,5 +170,11 @@ func movement(unit, planned_path, terrain):
   
   return outcome
     
-  
-  
+    
+func accelerate(unit):
+  if unit.speed == speed_levels.STATIONARY:
+    unit.speed = speed_levels.POP_OUT
+    print ("pop")
+  else:
+    unit.speed = speed_levels.SLOW # TODO: check movement settings.
+    print ("slow")

@@ -20,11 +20,9 @@ func _ready():
   
   var unit_to_place = tank_scene.instance()
   unit_to_place.faction = game.factions.RED
-  unit_to_place.move_points = 10
-  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank"
-  unit_to_place.speed = game.speed_levels.SLOW
   unit_to_place.gun_max_range = 15
+  unit_to_place.reset_points()
   unit_to_place.armour_thickness = standard_armour
   interface.unmark(unit_to_place) # Forces the color.
   terrain.emplace(unit_to_place, Vector2(12, 3))
@@ -34,12 +32,10 @@ func _ready():
   
   unit_to_place = tank_scene.instance()
   unit_to_place.faction = game.factions.RED
-  unit_to_place.move_points = 10
-  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank 2"
-  unit_to_place.speed = game.speed_levels.FAST
   unit_to_place.armour_thickness = standard_armour
   unit_to_place.gun_max_range = 15
+  unit_to_place.reset_points()
   interface.unmark(unit_to_place) # Forces the color.
   terrain.emplace(unit_to_place, Vector2(5, 3))
   
@@ -47,13 +43,11 @@ func _ready():
   add_child(unit_to_place)
   
   unit_to_place = tank_scene.instance()
-  unit_to_place.move_points = 10
-  unit_to_place.fire_points = 2
   unit_to_place.type = "Tank"
-  unit_to_place.speed = game.speed_levels.STATIONARY
   unit_to_place.faction = game.factions.BLUE
   unit_to_place.armour_thickness = standard_armour
   unit_to_place.gun_max_range = 15
+  unit_to_place.reset_points()
   interface.unmark(unit_to_place) # Forces the color.
   terrain.emplace(unit_to_place, Vector2(15, 1))
   
@@ -70,7 +64,11 @@ func count_units_of(player):
 func mark_destruction(unit):
   order_of_battle.erase(unit)
 
-func reload_all_points():
+func reset_points_and_speed():
   for u in order_of_battle:
-    u.fire_points = 2
-    u.move_points = 10
+    u.reset_points()
+    
+    # Not sure this is good. What if a unit ran out of move points
+    # and continue moving at the next turn? But what if it does not 
+    # move?    
+    u.speed = game.speed_levels.STATIONARY 

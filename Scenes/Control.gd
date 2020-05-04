@@ -61,6 +61,8 @@ func _unhandled_input(event):
     # Change the info only when needed, when a new cell is under the cursor.
     if (last_hovered_cell != hit): 
       last_hovered_cell = hit
+      
+      interface.put_cursor_at(hit)
       interface.clear_movement_plot()
  
       var distance = null
@@ -68,16 +70,15 @@ func _unhandled_input(event):
       
       if (selected_unit != null):
         var target = terrain.what_is_at(hit)
-        if target == null or target.alive == false:
-          var planned_path = terrain.plot_unit_path(selected_unit, hit)
-          interface.plot_movement(planned_path)
-        else:
-          distance = terrain.distance_between(selected_unit, target)
-          hit_probability = game.hit_probability(selected_unit, target, distance)
-          
-      interface.describe_cell(hit, distance, hit_probability)
-      
-    
+        if target != selected_unit:
+          if target == null or target.alive == false:
+            var planned_path = terrain.plot_unit_path(selected_unit, hit)
+            interface.plot_movement(planned_path)
+          else:
+            distance = terrain.distance_between(selected_unit, target)
+            hit_probability = game.hit_probability(selected_unit, target, distance)
+          interface.describe_cell(hit, distance, hit_probability)
+        
 
   if event is InputEventMouseButton:
     if event.is_pressed():
@@ -181,7 +182,7 @@ func turn_towards(position):
 func next_turn():
   unselect_current_unit()
   game.next_turn()
-  units.reload_all_points()
+  units.reset_points_and_speed()
   interface.clear_action_descritpion()
   interface.clear_movement_plot()
   interface.refresh_turn_info(game)
