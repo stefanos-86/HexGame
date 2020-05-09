@@ -4,9 +4,12 @@ var game = preload("res://FreeScripts/Game.gd")
 
 var tank_scene = load("res://Units/Tank.tscn")
 
+var Artillery = preload("res://FreeScripts/Artillery.gd")
+
 var terrain
 var interface
 var order_of_battle = []
+var artillery_support = []
 
 func _ready():
   terrain = get_tree().get_root().get_node("HexMap/Terrain")
@@ -51,6 +54,29 @@ func _ready():
   add_child(unit_to_place)
   
   reset_points_and_speed()  
+  
+  var cannon = Artillery.new()
+  cannon.owner = game.factions.RED
+  cannon.rounds_left = 3
+  cannon.id = 1
+  artillery_support.append(cannon)
+  cannon = Artillery.new()
+  cannon.owner = game.factions.RED
+  cannon.rounds_left = 3
+  cannon.id = 2
+  artillery_support.append(cannon)
+  
+  cannon = Artillery.new()
+  cannon.owner = game.factions.BLUE
+  cannon.rounds_left = 3
+  cannon.id = 1
+  artillery_support.append(cannon)
+  cannon = Artillery.new()
+  cannon.owner = game.factions.BLUE
+  cannon.rounds_left = 3
+  cannon.id = 2
+  artillery_support.append(cannon)
+  
 
 func count_units_of(player):
   var counter = 0
@@ -70,3 +96,11 @@ func reset_points_and_speed():
     # and continue moving at the next turn? But what if it does not 
     # move?    
     u.speed = game.speed_levels.STATIONARY 
+
+
+func available_fire_support(player):
+  var cannons = []
+  for c in artillery_support:
+    if c.owner == player:
+      cannons.append(c)
+  return cannons

@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Font/UI_SubParts/ArtilleryRow.gd" type="Script" id=1]
+
+[node name="HB" type="HBoxContainer"]
+margin_right = 464.0
+margin_bottom = 26.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="."]
+margin_top = 6.0
+margin_right = 400.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 400, 0 )
+text = "Gun 1 - no target, 3 rounds left."
+clip_text = true
+
+[node name="Plot" type="Button" parent="."]
+margin_left = 404.0
+margin_right = 464.0
+margin_bottom = 26.0
+rect_min_size = Vector2( 60, 0 )
+text = "Plot"
+
+[node name="Cancel" type="Button" parent="."]
+margin_left = 468.0
+margin_right = 528.0
+margin_bottom = 26.0
+rect_min_size = Vector2( 60, 0 )
+text = "Cancel"

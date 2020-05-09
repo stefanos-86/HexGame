@@ -135,37 +135,31 @@ func terrain_type_at(map_coordinate):
   return tiles_db[cell_type].terrain_name
 
 func fill_navigation_info():
-  var max_map_size = 30 # Todo: use the map extent like for the debug sprite
-  var start_point = -10
   var cell_id = 0
-  for i in range(start_point, max_map_size):
-    for j in range(start_point, max_map_size):
-      var map_coordinate = Vector2(i, j)
-      positions_id[map_coordinate] = cell_id   
+  var cells = get_used_cells()
+  for map_coordinate in cells:
+    positions_id[map_coordinate] = cell_id   
+    
+    shortest_path.add_point(cell_id, map_coordinate)
+    
+    var movement_cost = movement_cost_for_position(map_coordinate)
+    if (movement_cost != TerrainStats.impassable):
+      navigation.add_point(cell_id, map_coordinate, movement_cost)
       
-      shortest_path.add_point(cell_id, map_coordinate)
-      
-      var movement_cost = movement_cost_for_position(map_coordinate)
-      if (movement_cost != TerrainStats.impassable):
-        navigation.add_point(cell_id, map_coordinate, movement_cost)
-        
-      cell_id += 1
-        
+    cell_id += 1    
           
-  for i in range(start_point, max_map_size):
-    for j in range(start_point, max_map_size):
-      var map_coordinate = Vector2(i, j)
-      var movement_cost = movement_cost_for_position(map_coordinate)
-      var start = positions_id[map_coordinate]
-      var near = neighbors_of(map_coordinate)     
-      
-      for n in near:
-        if (positions_id.has(n)):
-          var end = positions_id[n]
-          var neighbor_cost = movement_cost_for_position(n)
-          shortest_path.connect_points(start, end)
-          if movement_cost != TerrainStats.impassable and neighbor_cost != TerrainStats.impassable:   
-            navigation.connect_points(start, end)
+  for map_coordinate in cells:
+    var movement_cost = movement_cost_for_position(map_coordinate)
+    var start = positions_id[map_coordinate]
+    var near = neighbors_of(map_coordinate)     
+    
+    for n in near:
+      if (positions_id.has(n)):
+        var end = positions_id[n]
+        var neighbor_cost = movement_cost_for_position(n)
+        shortest_path.connect_points(start, end)
+        if movement_cost != TerrainStats.impassable and neighbor_cost != TerrainStats.impassable:   
+          navigation.connect_points(start, end)
         
           
 func movement_cost_for_position(map_coordinate):

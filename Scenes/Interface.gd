@@ -3,6 +3,8 @@ extends Control
 signal movement_completed
 signal explosion_completed
 
+var ArtilleryRow = preload("res://Font/UI_SubParts/ArtilleryRow.tscn")
+
 var terrain
 var units
 
@@ -183,10 +185,15 @@ func plot_movement(path):
 func put_cursor_at(map_coordinates):
   $CellCursor.position = terrain.cell_to_world(map_coordinates)
  
-func describe_cell(map_coordinates, distance, hit_probability):
+
+func describe_terrain(map_coordinates):
   var terrain_type = terrain.terrain_type_at(map_coordinates)
   var terrain_desc = "({0}, {1}) - {2}".format([map_coordinates.x, map_coordinates.y, terrain_type])
   $Camera/L/Sidebar/Descriptions/VB/CellDescription.text = terrain_desc
+
+
+func describe_cell(map_coordinates, distance, hit_probability):
+  describe_terrain(map_coordinates)
     
   var target = terrain.what_is_at(map_coordinates)
   var target_desc = ""
@@ -204,6 +211,9 @@ func describe_cell(map_coordinates, distance, hit_probability):
       
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
   
+func describe_cell_artillery(cell_coordinates, cannon):
+  describe_terrain(cell_coordinates)
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = gun_label(cannon)
   
 func mark_as_selected(unit):
   unit.get_node("Highlight").modulate =  color_for_highlight
@@ -238,6 +248,41 @@ func mark_destruction(unit):
 
 func victory(winner):
   var message = "Battle finished: %s victory." % g.factions.keys()[winner]
-  $Camera/L/VictoryBox/CenterContainer/VBoxContainer/Winner.text = message
+  $Camera/L/VictoryBox/CC/VC/Winner.text = message
   $Camera/L/VictoryBox.visible = true
   # And this is it: the box has a quit button, the only thing you can push.
+
+
+func show_artillery_box(cannons, control):
+  $Camera/L/ArtilleryBox.visible = true
+
+  var list = $Camera/L/ArtilleryBox/VB/SC/ArtilleryList
+  delete_children(list)
+
+  for c in cannons:
+    var ui_row = ArtilleryRow.instance()
+    ui_row.cannon_to_plot = c
+    ui_row.get_node("Label").text = gun_label(c)
+    ui_row.get_node("Plot").connect("pressed", control, "cannon_targeting", [c])
+    ui_row.get_node("Cancel").connect("pressed", control, "cancel_fire_mission", [c])
+    list.add_child(ui_row)
+
+func close_artillery_box():
+  $Camera/L/ArtilleryBox.visible = false
+
+func delete_children(node):
+  for n in node.get_children():
+    node.remove_child(n)
+    n.queue_free()
+
+func gun_label(cannon):
+  var label = "Gun %d - " % cannon.id
+  
+  if cannon.rounds_left == 0:
+    return label + "no rounds left."
+    
+  if cannon.target_coordinates == null:
+    return label + " no target - %s rounds left." % cannon.rounds_left
+  
+  # The last possible case is a fire mission ongoing.
+  return label + " target at ({1}, {2}) in {3} turns.".format([cannon.target_coordinates.x, cannon.target_coordinates.y, cannon.turns_to_fire])

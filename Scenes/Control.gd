@@ -11,10 +11,14 @@ var interface
 var game = Game.new()
 
 var selected_unit = null
+var selected_cannon = null
 var animation_in_progress = false
 var target_to_destroy = null
 
 var last_hovered_cell = null
+
+enum mouse_states {COMBAT, ARTILLERY}
+var mouse_state = mouse_states.COMBAT
 
 func _ready():
   var root = get_tree().get_root()
@@ -52,6 +56,8 @@ func _unhandled_input(event):
     interface.pan_right()
   elif (event.is_action("NextTurn") and just_pressed):
     next_turn()
+  elif (event.is_action("PlotArtillery") and just_pressed):
+    plot_artillery()
     
     
   if event is InputEventMouseMotion:
@@ -64,48 +70,77 @@ func _unhandled_input(event):
       
       interface.put_cursor_at(hit)
       interface.clear_movement_plot()
- 
-      var distance = null
-      var hit_probability = null
       
-      if (selected_unit != null):
-        var target = terrain.what_is_at(hit)
-        if target != selected_unit:
-          if target == null or target.alive == false:
-            var planned_path = terrain.plot_unit_path(selected_unit, hit)
-            interface.plot_movement(planned_path)
-          else:
-            if not target.belongs_to(game.current_player):
-              distance = terrain.distance_between(selected_unit, target)
-              hit_probability = game.hit_probability(selected_unit, target, distance)
-          
-      interface.describe_cell(hit, distance, hit_probability)
+      if (mouse_state == mouse_states.COMBAT):
+        combat_mouse_hover(hit)
+        
+      if (mouse_state == mouse_states.ARTILLERY):
+        artillery_mouse_hover(hit)
         
 
   if event is InputEventMouseButton:
     if event.is_pressed():
       interface.clear_action_descritpion()
-      if event.button_index == BUTTON_LEFT:
-        var corrected_mouse_position = get_global_mouse_position()
-        var hit = terrain.detect_cell_under_mouse(corrected_mouse_position)
-        if(selected_unit == null):
-          select_unit_in_cell(hit)
-        else:
-          var target = terrain.what_is_at(hit)
-          if target == null or target.alive == false:
-            move_unit(selected_unit, hit)
-          elif target.belongs_to(game.current_player):
-            select_unit_in_cell(hit)
-          else:
-            shoot(selected_unit, target)
-          
-      if event.button_index == BUTTON_RIGHT:
-        var corrected_mouse_position = get_global_mouse_position()
-        turn_towards(corrected_mouse_position)
+      
+      if (mouse_state == mouse_states.COMBAT):
+        combat_mouse_click(event)
         
-      if event.button_index == BUTTON_MIDDLE:
-        unselect_current_unit()
+      if (mouse_state == mouse_states.ARTILLERY):
+        artillery_mouse_click(event)
+      
         
+func combat_mouse_click(event):
+  if event.button_index == BUTTON_LEFT:
+    var corrected_mouse_position = get_global_mouse_position()
+    var hit = terrain.detect_cell_under_mouse(corrected_mouse_position)
+    if(selected_unit == null):
+      select_unit_in_cell(hit)
+    else:
+      var target = terrain.what_is_at(hit)
+      if target == null or target.alive == false:
+        move_unit(selected_unit, hit)
+      elif target.belongs_to(game.current_player):
+        select_unit_in_cell(hit)
+      else:
+        shoot(selected_unit, target)
+      
+  if event.button_index == BUTTON_RIGHT:
+    var corrected_mouse_position = get_global_mouse_position()
+    turn_towards(corrected_mouse_position)
+    
+  if event.button_index == BUTTON_MIDDLE:
+    unselect_current_unit()
+ 
+func artillery_mouse_click(event):   
+  if event.button_index == BUTTON_LEFT:
+    var corrected_mouse_position = get_global_mouse_position()
+    var hit = terrain.detect_cell_under_mouse(corrected_mouse_position) 
+    complete_artillery_plot(hit)
+    
+    
+  if event.button_index == BUTTON_RIGHT: 
+    plot_artillery()  # Restart plotting from scratch.
+        
+func combat_mouse_hover(hit):
+  var distance = null
+  var hit_probability = null
+  
+  if (selected_unit != null):
+    var target = terrain.what_is_at(hit)
+    if target != selected_unit:
+      if target == null or target.alive == false:
+        var planned_path = terrain.plot_unit_path(selected_unit, hit)
+        interface.plot_movement(planned_path)
+      else:
+        if not target.belongs_to(game.current_player):
+          distance = terrain.distance_between(selected_unit, target)
+          hit_probability = game.hit_probability(selected_unit, target, distance)
+      
+  interface.describe_cell(hit, distance, hit_probability)
+      
+      
+func artillery_mouse_hover(hit):
+  interface.describe_cell_artillery(hit, selected_cannon)
       
 func shutdown():
     get_tree().quit() 
@@ -186,9 +221,38 @@ func turn_towards(position):
     selected_unit.rotate_turret_towards(position)
 
 func next_turn():
+  artillery_plot_done()  # In case the window is still open!
   unselect_current_unit()
   game.next_turn()
   units.reset_points_and_speed()
   interface.clear_action_descritpion()
   interface.clear_movement_plot()
   interface.refresh_turn_info(game)
+
+func plot_artillery():
+  animation_in_progress = true # Block the input on the map.
+  
+  var cannons = units.available_fire_support(game.current_player)
+  interface.show_artillery_box(cannons, self)
+  
+func cannon_targeting(cannon):
+  mouse_state = mouse_states.ARTILLERY
+  selected_cannon = cannon
+  interface.close_artillery_box()
+  animation_in_progress = false
+
+
+func artillery_plot_done():
+  interface.close_artillery_box()
+  mouse_state = mouse_states.COMBAT
+  animation_in_progress = false
+
+
+func complete_artillery_plot(target_cell):
+  selected_cannon.plot_fire_mission(target_cell)
+  var cannons = units.available_fire_support(game.current_player)
+  interface.show_artillery_box(cannons, self)
+  
+func cancel_fire_mission(cannon):
+  cannon.cancel_fire_mission()
+  plot_artillery() # Restart from scratch.
