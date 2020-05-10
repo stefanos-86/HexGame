@@ -35,6 +35,11 @@ class FireEffect:
 class MoveEffect:
   var actual_path = null
   var final_result = null
+  
+class ArtilleryEffect:
+  var actual_hit = null
+  var final_result = null
+  var destroyed_target = null
 
 var first_player_in_turn
 var current_player
@@ -188,3 +193,34 @@ func accelerate(unit):
     unit.speed = speed_levels.POP_OUT
   else:
     unit.speed = speed_levels.SLOW # TODO: check movement settings.
+
+func fire_artillery(cannons, terrain):
+  var results = []
+  
+  for c in cannons:
+    var expected_target = c.target_coordinates
+    var possible_hits = terrain.within_distance(expected_target, c.margin_of_error)
+
+    var actual_hit_index = rng.randi_range(0, possible_hits.size() -1)
+    var actual_hit = possible_hits[actual_hit_index]
+    
+    var outcome = ArtilleryEffect.new()
+    outcome.actual_hit = actual_hit
+    outcome.final_result = fire_outcome.MISS
+    
+    var object_at_hit = terrain.what_is_at(actual_hit) 
+    
+    if object_at_hit != null:
+      var already_hit = false
+      for effect in results:
+        if effect.destroyed_target == object_at_hit:
+            already_hit = false 
+      
+      # TODO: more complex destruction model? Account for armor?
+      if already_hit == false and object_at_hit != null and rng.randf() < 0.3:
+        outcome.final_result = fire_outcome.DESTROYED
+        outcome.destroyed_target = object_at_hit
+      
+    results.append(outcome)
+    
+  return results

@@ -52,8 +52,7 @@ func _ready():
   
   order_of_battle.append(unit_to_place)
   add_child(unit_to_place)
-  
-  reset_points_and_speed()  
+    
   
   var cannon = Artillery.new()
   cannon.owner = game.factions.RED
@@ -88,19 +87,31 @@ func count_units_of(player):
 func mark_destruction(unit):
   order_of_battle.erase(unit)
 
-func reset_points_and_speed():
+func reset_points_and_speed(player):
   for u in order_of_battle:
-    u.reset_points()
+    if u.faction == player:
+      u.reset_points()
     
-    # Not sure this is good. What if a unit ran out of move points
-    # and continue moving at the next turn? But what if it does not 
-    # move?    
-    u.speed = game.speed_levels.STATIONARY 
+      # Not sure this is good. What if a unit ran out of move points
+      # and continue moving at the next turn? But what if it does not 
+      # move?    
+      u.speed = game.speed_levels.STATIONARY 
 
 
 func available_fire_support(player):
   var cannons = []
   for c in artillery_support:
     if c.owner == player:
+      cannons.append(c)
+  return cannons
+
+func progress_fire_missions(player):
+  for c in available_fire_support(player):
+    c.turns_to_fire -= 1
+
+func ready_fire_missions(player):
+  var cannons = []
+  for c in available_fire_support(player):
+    if c.turns_to_fire == 0:
       cannons.append(c)
   return cannons

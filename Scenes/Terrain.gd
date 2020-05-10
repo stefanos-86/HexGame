@@ -208,10 +208,21 @@ func move(something, here):
 func distance_between(unit_a, unit_b):
   var coord_a = where_is(unit_a)
   var coord_b = where_is(unit_b)
+
+  return distance_between_cells(coord_a, coord_b) -2 # "Discount" the start and end cells.
   
+func distance_between_cells(coord_a, coord_b):
   var start = positions_id[coord_a]
   var end = positions_id[coord_b]
   
   var path = shortest_path.get_point_path(start, end)
-  return path.size() -2 # "Discount" the start and end cells.
+  return path.size() # Discount the place where you already are.
 
+
+func within_distance(center, radius):
+  # Do it the safe, but slow and stupid, way.
+  var close_enough = []
+  for c in get_used_cells():
+    if distance_between_cells(center, c) < radius +1: # A one-cell circle has radius 1
+      close_enough.append(c)
+  return close_enough

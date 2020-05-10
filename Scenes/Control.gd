@@ -224,10 +224,22 @@ func next_turn():
   artillery_plot_done()  # In case the window is still open!
   unselect_current_unit()
   game.next_turn()
-  units.reset_points_and_speed()
+  units.reset_points_and_speed(game.current_player)
+  units.progress_fire_missions(game.current_player)
   interface.clear_action_descritpion()
   interface.clear_movement_plot()
   interface.refresh_turn_info(game)
+  
+  var artillery_effects = game.fire_artillery(units.ready_fire_missions(game.current_player), terrain)
+  for outcome in artillery_effects:
+    
+    print ("Before call ", OS.get_ticks_msec())
+    yield(interface.animate_artillery(outcome), "completed")
+    
+    print ("After call ", OS.get_ticks_msec())
+    target_to_destroy = outcome.destroyed_target
+    after_shoot()
+  
 
 func plot_artillery():
   animation_in_progress = true # Block the input on the map.
@@ -249,10 +261,10 @@ func artillery_plot_done():
 
 
 func complete_artillery_plot(target_cell):
+  animation_in_progress = true
   selected_cannon.plot_fire_mission(target_cell)
-  var cannons = units.available_fire_support(game.current_player)
-  interface.show_artillery_box(cannons, self)
+  plot_artillery()
   
 func cancel_fire_mission(cannon):
   cannon.cancel_fire_mission()
-  plot_artillery() # Restart from scratch.
+  plot_artillery()

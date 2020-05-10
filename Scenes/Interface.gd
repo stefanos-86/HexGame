@@ -84,11 +84,8 @@ func animate_attack(attacker, target, outcome):
   var attack_from = terrain.cell_to_world(terrain.where_is(attacker))
   var attack_to = terrain.cell_to_world(terrain.where_is(target))
   
-  $Explosion.position = attack_to
-  if outcome.final_result == g.fire_outcome.MISS:
-    var fudge_angle = rng.randf_range(0, PI * 2)
-    var fudge_vector = Vector2(30, 0).rotated(fudge_angle)
-    $Explosion.position += fudge_vector
+  var imprecise = outcome.final_result == g.fire_outcome.MISS
+  prepare_explosion(attack_to, imprecise)
   
   $MovementPath.curve.add_point(attack_from)
   $MovementPath.curve.add_point($Explosion.position)
@@ -108,6 +105,13 @@ func animate_attack(attacker, target, outcome):
   var action_label = get_action_label()
   action_label.text = message
   action_label.modulate = colors_for_fire[outcome.final_result]
+  
+func prepare_explosion(wc_position, imprecise):
+  $Explosion.position = wc_position
+  if imprecise:
+    var fudge_angle = rng.randf_range(0, PI * 2)
+    var fudge_vector = Vector2(30, 0).rotated(fudge_angle)
+    $Explosion.position += fudge_vector
   
 func animate_explosion(missile):
   add_child(missile)
@@ -213,7 +217,7 @@ func describe_cell(map_coordinates, distance, hit_probability):
   
 func describe_cell_artillery(cell_coordinates, cannon):
   describe_terrain(cell_coordinates)
-  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = gun_label(cannon)
+  $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = "Gun %d" % cannon.id
   
 func mark_as_selected(unit):
   unit.get_node("Highlight").modulate =  color_for_highlight
@@ -285,4 +289,21 @@ func gun_label(cannon):
     return label + " no target - %s rounds left." % cannon.rounds_left
   
   # The last possible case is a fire mission ongoing.
-  return label + " target at ({1}, {2}) in {3} turns.".format([cannon.target_coordinates.x, cannon.target_coordinates.y, cannon.turns_to_fire])
+  return label + " target at ({0}, {1}) in {2} turns.".format([cannon.target_coordinates.x, cannon.target_coordinates.y, cannon.turns_to_fire])
+
+func animate_artillery(effect):
+  var position = terrain.cell_to_world(effect.actual_hit)
+  var imprecise = effect.final_result == g.fire_outcome.MISS
+  prepare_explosion(position, imprecise)
+  
+  var result_name = g.fire_outcome.keys()[effect.final_result]
+  var message = "Art. ({0}, {1}): {2}".format([effect.actual_hit.x, effect.actual_hit.y, result_name])
+  get_action_label().text = message
+  
+  print ("Before exp ", OS.get_ticks_msec())
+  $Explosion/AnimationPlayer.play("ExplosionAnimation")
+  yield($Explosion/AnimationPlayer, "animation_finished")
+  print ("After exp ", OS.get_ticks_msec())
+  
+  return true
+    
