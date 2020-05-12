@@ -222,5 +222,6 @@ func fire_artillery(cannons, terrain):
         outcome.destroyed_target = object_at_hit
       
     results.append(outcome)
+    c.rounds_left -= 1
     
   return results

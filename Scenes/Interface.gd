@@ -267,8 +267,13 @@ func show_artillery_box(cannons, control):
     var ui_row = ArtilleryRow.instance()
     ui_row.cannon_to_plot = c
     ui_row.get_node("Label").text = gun_label(c)
-    ui_row.get_node("Plot").connect("pressed", control, "cannon_targeting", [c])
-    ui_row.get_node("Cancel").connect("pressed", control, "cancel_fire_mission", [c])
+    
+    if c.rounds_left == 0:
+      ui_row.get_node("Plot").visible = false
+      ui_row.get_node("Cancel").visible = false
+    else:
+      ui_row.get_node("Plot").connect("pressed", control, "cannon_targeting", [c])
+      ui_row.get_node("Cancel").connect("pressed", control, "cancel_fire_mission", [c])
     list.add_child(ui_row)
 
 func close_artillery_box():

@@ -239,6 +239,8 @@ func next_turn():
     print ("After call ", OS.get_ticks_msec())
     target_to_destroy = outcome.destroyed_target
     after_shoot()
+    
+  units.clear_executed_fire_missions(game.current_player)
   
 
 func plot_artillery():

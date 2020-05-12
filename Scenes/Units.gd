@@ -115,3 +115,8 @@ func ready_fire_missions(player):
     if c.turns_to_fire == 0:
       cannons.append(c)
   return cannons
+
+func clear_executed_fire_missions(player):
+  for c in available_fire_support(player):
+    if c.turns_to_fire == 0:
+      c.cancel_fire_mission()
