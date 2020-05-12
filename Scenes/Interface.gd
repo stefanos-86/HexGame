@@ -311,4 +311,23 @@ func animate_artillery(effect):
   print ("After exp ", OS.get_ticks_msec())
   
   return true
+  
+func unit_list(list):
+  var list_box = $Camera/L/Sidebar/UnitList/VB/SC/VB
+  for old_label in list_box.get_children():
+    old_label.queue_free()
+  
+  for unit in list:
+    var position = terrain.where_is(unit)
+    var label_text = "({0}, {1}) - {2}".format([position.x, position.y, unit.type])
     
+    var label = Label.new()
+    label.text = label_text
+    
+    if unit.move_points == 0 or unit.fire_points == 0:
+      label.modulate = color_for_warning
+      
+    if unit.alive == false:
+      label.modulate = color_for_destruction
+      
+    list_box.add_child(label)

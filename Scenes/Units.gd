@@ -84,8 +84,15 @@ func count_units_of(player):
       counter += 1
   return counter
 
+func order_of_battle_of(player):
+  var units = []
+  for u in order_of_battle:
+    if u.faction == player:
+      units.append(u)
+  return units
+
 func mark_destruction(unit):
-  order_of_battle.erase(unit)
+  unit.alive = false
 
 func reset_points_and_speed(player):
   for u in order_of_battle:

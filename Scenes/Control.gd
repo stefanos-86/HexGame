@@ -173,6 +173,7 @@ func move_unit(unit, destination):
     interface.animate_movement(unit, movement_result)
     interface.refresh_unit_description(unit)
     terrain.move(unit, movement_result.actual_path.back())
+    update_unit_list()
 
 func reactivate_input():
   animation_in_progress = false
@@ -213,7 +214,9 @@ func after_shoot():
       return # End game, nothing left to do.
       
     target_to_destroy = null
+  update_unit_list() # Reaction fire or artillery friendly fire, or end of ammo.
   reactivate_input()
+  
 
 func turn_towards(position):
   if selected_unit != null:
@@ -224,6 +227,7 @@ func next_turn():
   artillery_plot_done()  # In case the window is still open!
   unselect_current_unit()
   game.next_turn()
+  update_unit_list()
   units.reset_points_and_speed(game.current_player)
   units.progress_fire_missions(game.current_player)
   interface.clear_action_descritpion()
@@ -270,3 +274,8 @@ func complete_artillery_plot(target_cell):
 func cancel_fire_mission(cannon):
   cannon.cancel_fire_mission()
   plot_artillery()
+
+
+func update_unit_list():
+  var list = units.order_of_battle_of(game.current_player)
+  interface.unit_list(list)
