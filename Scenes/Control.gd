@@ -28,6 +28,7 @@ func _ready():
 
   game.begin_game()
   interface.refresh_turn_info(game)
+  unselect_current_unit()
   update_unit_list()
 
 func _unhandled_input(event):
@@ -156,6 +157,7 @@ func select_unit(unit):
     interface.mark_as_selected(unit)
     selected_unit = unit
     update_unit_list()
+    interface.allow_selected_unit_actions()
      
 func unselect_current_unit():
   if (selected_unit != null):
@@ -163,6 +165,7 @@ func unselect_current_unit():
     interface.clear_movement_plot()
   selected_unit = null
   update_unit_list()
+  interface.disable_selected_unit_actions()
 
   
 func move_unit(unit, destination):

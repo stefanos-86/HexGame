@@ -210,22 +210,22 @@ margin_bottom = 20.0
 mouse_filter = 0
 script = SubResource( 2 )
 
-[node name="CenterContainer" type="CenterContainer" parent="Interface/Camera/L/Sidebar/UnitList/VB"]
+[node name="CC" type="CenterContainer" parent="Interface/Camera/L/Sidebar/UnitList/VB"]
 margin_top = 254.0
 margin_right = 210.0
 margin_bottom = 280.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer"]
+[node name="HB" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC"]
 margin_left = 21.0
 margin_right = 189.0
 margin_bottom = 26.0
 
-[node name="Unselect" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer"]
+[node name="Unselect" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB"]
 margin_right = 92.0
 margin_bottom = 26.0
 text = "Deselect"
 
-[node name="Center" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer"]
+[node name="Center" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB"]
 margin_left = 96.0
 margin_right = 168.0
 margin_bottom = 26.0
@@ -425,8 +425,8 @@ __meta__ = {
 [connection signal="start_explosion_animation" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="animate_explosion"]
 [connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/FireStance" to="Control" method="change_fire_stance"]
 [connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/MoveStance" to="Control" method="change_move_stance"]
-[connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer/Unselect" to="Control" method="unselect_current_unit"]
-[connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer/Center" to="Control" method="center_on_unit"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect" to="Control" method="unselect_current_unit"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB/Center" to="Control" method="center_on_unit"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Artillery" to="Control" method="plot_artillery"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/TurnButton" to="Control" method="next_turn"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomIn" to="Interface" method="zoom_in"]

@@ -344,3 +344,15 @@ func unit_list(list, control, selected_unit):
     label.connect("label_clicked", control, "select_unit", [unit])
      
     list_box.add_child(label)
+
+func allow_selected_unit_actions():
+  $Camera/L/Sidebar/UnitList/VB/CC/HB/Center.disabled = false
+  $Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect.disabled = false
+  $Camera/L/Sidebar/Stance/VB/MoveStance.disabled = false
+  $Camera/L/Sidebar/Stance/VB/FireStance.disabled = false
+  
+func disable_selected_unit_actions():
+  $Camera/L/Sidebar/UnitList/VB/CC/HB/Center.disabled = true
+  $Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect.disabled = true
+  $Camera/L/Sidebar/Stance/VB/MoveStance.disabled = true
+  $Camera/L/Sidebar/Stance/VB/FireStance.disabled = true
