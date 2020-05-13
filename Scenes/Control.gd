@@ -170,7 +170,6 @@ func move_unit(unit, destination):
   var planned_path = terrain.plot_unit_path(unit, destination)
   
   var movement_result = game.movement(unit, planned_path, terrain)
-  print (movement_result.actual_path)
   
   if movement_result.actual_path == []:
     animation_in_progress = false
@@ -285,3 +284,9 @@ func cancel_fire_mission(cannon):
 func update_unit_list():
   var list = units.order_of_battle_of(game.current_player)
   interface.unit_list(list, self, selected_unit)
+
+
+func center_on_unit():
+  if selected_unit != null:
+    var position = terrain.where_is(selected_unit)
+    interface.pan_to_cell(position)

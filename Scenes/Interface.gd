@@ -156,6 +156,11 @@ func pan(x, y):
   
   $Camera.position = future_position
   
+func pan_to_cell(coordinate):
+  var position = terrain.cell_to_world(coordinate)
+  var movement = position - $Camera.position
+  pan(movement.x, movement.y)
+  
 func compute_pan_limits():
   var map_extent = terrain.bounding_box 
   var min_extent = terrain.cell_to_world(map_extent.position)
@@ -306,10 +311,8 @@ func animate_artillery(effect):
   var message = "Art. ({0}, {1}): {2}".format([effect.actual_hit.x, effect.actual_hit.y, result_name])
   get_action_label().text = message
   
-  print ("Before exp ", OS.get_ticks_msec())
   $Explosion/AnimationPlayer.play("ExplosionAnimation")
   yield($Explosion/AnimationPlayer, "animation_finished")
-  print ("After exp ", OS.get_ticks_msec())
   
   return true
   
