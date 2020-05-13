@@ -290,3 +290,13 @@ func center_on_unit():
   if selected_unit != null:
     var position = terrain.where_is(selected_unit)
     interface.pan_to_cell(position)
+
+
+func change_fire_stance(id):
+  if selected_unit != null:
+    selected_unit.fire_stance = id
+
+
+func change_move_stance(id):
+  if selected_unit != null:
+    selected_unit.movement_stance = id

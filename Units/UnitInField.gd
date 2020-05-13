@@ -9,6 +9,9 @@ var fire_points
 
 var speed
 
+var movement_stance
+var fire_stance
+
 var alive = true
 
 # TODO: this values belong to the type of the unit.

@@ -233,6 +233,10 @@ func refresh_unit_description(unit):
   var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.fire_points])
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
   
+  $Camera/L/Sidebar/Stance/VB/FireStance.selected = unit.fire_stance
+  $Camera/L/Sidebar/Stance/VB/MoveStance.selected = unit.movement_stance
+  
+  
 func no_fire_points():
   var action_label = get_action_label()
   action_label.modulate = color_for_warning

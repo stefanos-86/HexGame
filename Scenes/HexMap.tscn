@@ -167,14 +167,14 @@ margin_top = 5.0
 margin_right = 213.0
 margin_bottom = 61.0
 
-[node name="Fire" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+[node name="FireStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
 margin_right = 210.0
 margin_bottom = 26.0
 text = "Fire at will"
 items = [ "Fire at will", null, false, 0, null, "Return fire", null, false, 1, null, "Hold fire", null, false, 2, null ]
 selected = 0
 
-[node name="Move" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+[node name="MoveStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
 margin_top = 30.0
 margin_right = 210.0
 margin_bottom = 56.0
@@ -423,6 +423,8 @@ __meta__ = {
 [connection signal="movement_completed" from="Interface" to="Control" method="reactivate_input"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="complete_movement_animation"]
 [connection signal="start_explosion_animation" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="animate_explosion"]
+[connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/FireStance" to="Control" method="change_fire_stance"]
+[connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/MoveStance" to="Control" method="change_move_stance"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer/Unselect" to="Control" method="unselect_current_unit"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CenterContainer/HBoxContainer/Center" to="Control" method="center_on_unit"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Artillery" to="Control" method="plot_artillery"]

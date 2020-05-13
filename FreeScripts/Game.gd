@@ -27,6 +27,16 @@ enum movement_outcome {
   ENGAGED_MID_WAY
  }
 
+enum movement_stances {
+  GO_SLOW,
+  GO_FAST
+ }
+
+enum fire_stances {
+  FIRE_AT_WILL,
+  RETURN_FIRE,
+  HOLD_FIRE
+ }
 
 class FireEffect:
   var armor_part_hit = null
@@ -109,9 +119,6 @@ func fire(shooter, target, terrain):
     
   var bearing = (attack_angle - target.global_rotation) / TWO_PI
 
-  print (attack_direction, " ", attack_angle, " ", target.global_rotation)
-  print ("bearing ", bearing)
-  
   var p_hit_side = 0
   if (bearing < 0.25):
     p_hit_side = lerp(0, 1, bearing * 4)
@@ -122,8 +129,6 @@ func fire(shooter, target, terrain):
   else:
     p_hit_side = lerp(1, 0, (bearing - 0.75) * 4)
     
-  print ("Side hit " , p_hit_side)
-    
   var armor_part_hit = armor_part.REAR
   if rng.randf() <= p_hit_side:
     armor_part_hit = armor_part.SIDE
@@ -131,9 +136,6 @@ func fire(shooter, target, terrain):
     armor_part_hit = armor_part.FRONT
   
   effect.armor_part_hit = armor_part_hit
-  
-  print (armor_part.keys()[armor_part_hit])
-  print (shot_strength, " vs ", target.armour_thickness[armor_part_hit])
   
   if shot_strength > target.armour_thickness[armor_part_hit]:
     effect.final_result = fire_outcome.DESTROYED
