@@ -178,10 +178,13 @@ func move_unit(unit, destination):
     animation_in_progress = false
   else:
     interface.animate_movement(unit, movement_result)
+    yield(interface, "movement_completed")
+    
     interface.refresh_unit_description(unit)
     terrain.move(unit, movement_result.actual_path.back())
   
   update_unit_list()
+  reactivate_input()
 
 func reactivate_input():
   animation_in_progress = false
@@ -208,6 +211,12 @@ func shoot(attacker, target):
     
   interface.refresh_unit_description(attacker)
   interface.animate_attack(attacker, target, attack_result)
+  yield(interface, "attack_completed")
+  
+  # TODO: return fire, if target survived or other units are looking at the action.
+  
+  after_shoot()
+  
 
 func after_shoot():
   if target_to_destroy != null:
@@ -245,10 +254,8 @@ func next_turn():
   var artillery_effects = game.fire_artillery(units.ready_fire_missions(game.current_player), terrain)
   for outcome in artillery_effects:
     
-    print ("Before call ", OS.get_ticks_msec())
     yield(interface.animate_artillery(outcome), "completed")
     
-    print ("After call ", OS.get_ticks_msec())
     target_to_destroy = outcome.destroyed_target
     after_shoot()
     

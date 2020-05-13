@@ -1,7 +1,7 @@
 extends Control
 
 signal movement_completed
-signal explosion_completed
+signal attack_completed
 
 var ArtilleryRow = preload("res://Font/UI_SubParts/ArtilleryRow.tscn")
 var ClickableLabel = preload("res://FreeScripts/ClickableLabel.gd")
@@ -60,16 +60,15 @@ func animate_movement(unit, move_effect):
   units.remove_child(unit)
   var transporter = $MovementPath/PathFollow2D/Transporter
 
-  transporter.reset_at_start(distance_to_cover, 120, "movement_animation_done", unit)  
+  transporter.reset_at_start(distance_to_cover, 120, unit)  
+  yield(transporter, "transport_done")
   
   describe_movement_effect(move_effect)
   
-func complete_movement_animation(moving_unit):
-  units.add_child(moving_unit)
-  moving_unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
-  moving_unit.set_position($MovementPath/PathFollow2D.get_position());
+  units.add_child(unit)
+  unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
+  unit.set_position($MovementPath/PathFollow2D.get_position());
   emit_signal("movement_completed")
-  
   
 func describe_movement_effect(move_effect):
   if move_effect.final_result == g.movement_outcome.NO_MOVE_POINTS:
@@ -95,7 +94,8 @@ func animate_attack(attacker, target, outcome):
     
   var m = $Missile
   remove_child(m)
-  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 500, "start_explosion_animation", m)  
+  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 500, m)  
+  yield($MovementPath/PathFollow2D/Transporter, "transport_done")
   
   var message = "Missed!"
   if outcome.final_result != g.fire_outcome.MISS:
@@ -107,6 +107,11 @@ func animate_attack(attacker, target, outcome):
   action_label.text = message
   action_label.modulate = colors_for_fire[outcome.final_result]
   
+  add_child(m)
+  $Explosion/AnimationPlayer.play("ExplosionAnimation")
+  yield($Explosion/AnimationPlayer, "animation_finished")
+  emit_signal("attack_completed")
+  
 func prepare_explosion(wc_position, imprecise):
   $Explosion.position = wc_position
   if imprecise:
@@ -114,10 +119,6 @@ func prepare_explosion(wc_position, imprecise):
     var fudge_vector = Vector2(30, 0).rotated(fudge_angle)
     $Explosion.position += fudge_vector
   
-func animate_explosion(missile):
-  add_child(missile)
-  $Explosion/AnimationPlayer.play("ExplosionAnimation")
-  emit_signal("explosion_completed")
 
 func zoom_out():
   change_zoom(1.1)

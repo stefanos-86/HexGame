@@ -419,10 +419,6 @@ script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
-[connection signal="explosion_completed" from="Interface" to="Control" method="after_shoot"]
-[connection signal="movement_completed" from="Interface" to="Control" method="reactivate_input"]
-[connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="complete_movement_animation"]
-[connection signal="start_explosion_animation" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="animate_explosion"]
 [connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/FireStance" to="Control" method="change_fire_stance"]
 [connection signal="item_selected" from="Interface/Camera/L/Sidebar/Stance/VB/MoveStance" to="Control" method="change_move_stance"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect" to="Control" method="unselect_current_unit"]
