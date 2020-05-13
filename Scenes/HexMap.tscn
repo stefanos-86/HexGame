@@ -214,7 +214,6 @@ script = SubResource( 2 )
 margin_top = 254.0
 margin_right = 210.0
 margin_bottom = 280.0
-disabled = true
 text = "Deselect"
 
 [node name="Artillery" type="Button" parent="Interface/Camera/L/Sidebar"]
@@ -409,6 +408,7 @@ __meta__ = {
 [connection signal="movement_completed" from="Interface" to="Control" method="reactivate_input"]
 [connection signal="movement_animation_done" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="complete_movement_animation"]
 [connection signal="start_explosion_animation" from="Interface/MovementPath/PathFollow2D/Transporter" to="Interface" method="animate_explosion"]
+[connection signal="pressed" from="Interface/Camera/L/Sidebar/UnitList/VB/Unselect" to="Control" method="unselect_current_unit"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/Artillery" to="Control" method="plot_artillery"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/TurnButton" to="Control" method="next_turn"]
 [connection signal="pressed" from="Interface/Camera/L/Sidebar/View/CC/GC/ZoomIn" to="Interface" method="zoom_in"]

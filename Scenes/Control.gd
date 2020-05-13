@@ -160,7 +160,9 @@ func select_unit(unit):
 func unselect_current_unit():
   if (selected_unit != null):
     interface.unmark(selected_unit)
+    interface.clear_movement_plot()
   selected_unit = null
+  update_unit_list()
 
   
 func move_unit(unit, destination):
