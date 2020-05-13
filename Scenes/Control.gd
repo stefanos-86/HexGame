@@ -25,10 +25,10 @@ func _ready():
   units = root.get_node("HexMap/Units")
   terrain = root.get_node("HexMap/Terrain")
   interface = root.get_node("HexMap/Interface")
-  
+
   game.begin_game()
   interface.refresh_turn_info(game)
-  
+  update_unit_list()
 
 func _unhandled_input(event):
   if(event.is_action("Shutdown")):
@@ -148,11 +148,14 @@ func shutdown():
 
 func select_unit_in_cell(hit):
   var unit = terrain.what_is_at(hit)
-      
+  select_unit(unit)
+    
+func select_unit(unit):
   if unit != null and unit.alive and unit.belongs_to(game.current_player):
     unselect_current_unit()
     interface.mark_as_selected(unit)
     selected_unit = unit
+    update_unit_list()
      
 func unselect_current_unit():
   if (selected_unit != null):
@@ -173,7 +176,8 @@ func move_unit(unit, destination):
     interface.animate_movement(unit, movement_result)
     interface.refresh_unit_description(unit)
     terrain.move(unit, movement_result.actual_path.back())
-    update_unit_list()
+  
+  update_unit_list()
 
 func reactivate_input():
   animation_in_progress = false
@@ -278,4 +282,4 @@ func cancel_fire_mission(cannon):
 
 func update_unit_list():
   var list = units.order_of_battle_of(game.current_player)
-  interface.unit_list(list)
+  interface.unit_list(list, self, selected_unit)

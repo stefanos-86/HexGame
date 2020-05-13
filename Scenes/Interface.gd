@@ -4,7 +4,7 @@ signal movement_completed
 signal explosion_completed
 
 var ArtilleryRow = preload("res://Font/UI_SubParts/ArtilleryRow.tscn")
-
+var ClickableLabel = preload("res://FreeScripts/ClickableLabel.gd")
 var terrain
 var units
 
@@ -27,6 +27,7 @@ var colors_for_factions = {
  }
 var color_for_highlight = Color(1, 1, 0)
 var color_for_destruction = Color(0.2, 0.2, 0.2)
+var color_for_selection = Color(0.2, 0.9, 0.2)
 var color_for_warning = Color(1, 0.5, 0)
 var colors_for_fire = {
   g.fire_outcome.MISS: Color(1, 0.4, 0.4),
@@ -312,7 +313,7 @@ func animate_artillery(effect):
   
   return true
   
-func unit_list(list):
+func unit_list(list, control, selected_unit):
   var list_box = $Camera/L/Sidebar/UnitList/VB/SC/VB
   for old_label in list_box.get_children():
     old_label.queue_free()
@@ -321,7 +322,7 @@ func unit_list(list):
     var position = terrain.where_is(unit)
     var label_text = "({0}, {1}) - {2}".format([position.x, position.y, unit.type])
     
-    var label = Label.new()
+    var label = ClickableLabel.new()
     label.text = label_text
     
     if unit.move_points == 0 or unit.fire_points == 0:
@@ -330,4 +331,9 @@ func unit_list(list):
     if unit.alive == false:
       label.modulate = color_for_destruction
       
+    if unit == selected_unit:
+      label.modulate = color_for_selection
+      
+    label.connect("label_clicked", control, "select_unit", [unit])
+     
     list_box.add_child(label)
