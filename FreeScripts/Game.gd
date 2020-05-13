@@ -191,10 +191,16 @@ func movement(unit, planned_path, terrain):
     
     
 func accelerate(unit):
-  if unit.speed == speed_levels.STATIONARY:
-    unit.speed = speed_levels.POP_OUT
+  if unit.movement_stance == movement_stances.GO_SLOW:
+    if unit.speed == speed_levels.STATIONARY:
+      unit.speed = speed_levels.POP_OUT
+    else:
+      unit.speed = speed_levels.SLOW
   else:
-    unit.speed = speed_levels.SLOW # TODO: check movement settings.
+    if unit.speed == speed_levels.STATIONARY:
+      unit.speed = speed_levels.SLOW
+    else:
+      unit.speed = speed_levels.FAST
 
 func fire_artillery(cannons, terrain):
   var results = []
