@@ -1,6 +1,8 @@
 extends Node2D
 
-# Data that "instantiates" a unit on the field.
+# Data that "instantiates" a unit on the field, plus some little logic
+# to manouver the elements of the units scene (the rest of the code
+# need not to know its particular nodes).
 var faction
 var type
 
@@ -14,16 +16,6 @@ var fire_stance
 
 var alive = true
 
-# TODO: this values belong to the type of the unit.
-# They do not change when fielding it. The gun has been installed
-# in the tank factory; deploying the vehicle has no effect.
-# Same for the armor.
-var gun_max_range = 12
-var gun_penetration_power = 450 # mm of steel at 90 degrees, point blank.
-var armour_thickness = {}
-var max_fire_points = 2
-var max_move_points = 8
-
 func belongs_to(player):
   return faction == player
   
@@ -35,7 +27,7 @@ func mark_destruction():
   $Destroyed.visible = true
   
 func reset_points():
-  move_points = max_move_points
-  fire_points = max_fire_points
+  move_points = type.max_move_points
+  fire_points = type.max_fire_points
   
 

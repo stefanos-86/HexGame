@@ -209,7 +209,7 @@ func describe_cell(map_coordinates, distance, hit_probability):
   var target = terrain.what_is_at(map_coordinates)
   var target_desc = ""
   if target != null:
-    target_desc = target.type
+    target_desc = target.type.type_name
     
     if target.alive == true:
       if distance != null:
@@ -231,7 +231,7 @@ func mark_as_selected(unit):
   refresh_unit_description(unit)
   
 func refresh_unit_description(unit):
-  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type, unit.move_points, unit.fire_points])
+  var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type.type_name, unit.move_points, unit.fire_points])
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = unit_desc
   
   $Camera/L/Sidebar/Stance/VB/FireStance.selected = unit.fire_stance
@@ -328,7 +328,7 @@ func unit_list(list, control, selected_unit):
   
   for unit in list:
     var position = terrain.where_is(unit)
-    var label_text = "({0}, {1}) - {2}".format([position.x, position.y, unit.type])
+    var label_text = "({0}, {1}) - {2}".format([position.x, position.y, unit.type.type_name])
     
     var label = ClickableLabel.new()
     label.text = label_text

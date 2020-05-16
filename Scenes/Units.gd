@@ -12,13 +12,22 @@ var terrain
 var order_of_battle = {}
 var artillery_support = {}
 
-# Armor thickness in rolled steel millimiters.
+# Armor thickness and gun penetration are in rolled steel millimiters.
 # All the tanks are of the same model in the game.
-var standard_armour = {
-  game.armor_part.FRONT:  300,
-  game.armor_part.SIDE: 250,
-  game.armor_part.REAR: 100,
-}
+class TankUnit:
+  var game = preload("res://FreeScripts/Game.gd")
+  var gun_max_range = 12
+  var gun_penetration_power = 450 # at 90 degrees, point blank.
+  var armour_thickness = {
+    game.armor_part.FRONT: 300,
+    game.armor_part.SIDE: 250,
+    game.armor_part.REAR: 100,
+  }
+  var max_fire_points = 2
+  var max_move_points = 8
+  var type_name = "Tank"
+  
+var tank_instance = TankUnit.new() # Flyweight, the tank data never changes.
 
 func _prepare_data_structures():
   for faction in game.factions:
@@ -29,9 +38,8 @@ func _prepare_data_structures():
 func _place_tank(owner, position, facing):
   var unit_to_place = tank_scene.instance()
   unit_to_place.faction = owner
-  unit_to_place.type = "Tank"
+  unit_to_place.type = tank_instance
   unit_to_place.reset_points()
-  unit_to_place.armour_thickness = standard_armour
   unit_to_place.movement_stance = game.movement_stances.GO_SLOW
   unit_to_place.fire_stance = game.fire_stances.FIRE_AT_WILL
   terrain.emplace(unit_to_place, position)
@@ -50,10 +58,10 @@ func _create_cannon(owner, id):
 
 func _ready():
   terrain = get_tree().get_root().get_node("HexMap/Terrain")
-  create_all_units(terrain)
+  create_all_units()
   
 
-func create_all_units(terrain):
+func create_all_units():
   _prepare_data_structures()
   
   _place_tank(game.factions.RED, Vector2(7, 0), Vector2(9, 0))

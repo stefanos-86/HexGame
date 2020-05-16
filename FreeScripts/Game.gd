@@ -82,7 +82,7 @@ func hit_probability(attacker, target, distance):
   var p = 100
   p = movement_accuracy_penalty(p, attacker.speed)
   p = movement_accuracy_penalty(p, target.speed)
-  p = distance_penalty(p, distance, attacker.gun_max_range)
+  p = distance_penalty(p, distance, attacker.type.gun_max_range)
     
   # Account for size? For heading?
   
@@ -101,7 +101,7 @@ func fire(shooter, target, terrain):
   
   var distance = terrain.distance_between(shooter, target)
   
-  if distance > shooter.gun_max_range:
+  if distance > shooter.type.gun_max_range:
     effect.final_result = fire_outcome.OUT_OF_RANGE
     return effect
   
@@ -112,7 +112,7 @@ func fire(shooter, target, terrain):
     effect.final_result = fire_outcome.MISS
     return effect
     
-  var shot_strength = distance_penalty(shooter.gun_penetration_power, distance, shooter.gun_max_range) 
+  var shot_strength = distance_penalty(shooter.type.gun_penetration_power, distance, shooter.type.gun_max_range) 
   
   var attack_direction = target.position - shooter.position
   var attack_angle = attack_direction.angle()
@@ -139,7 +139,7 @@ func fire(shooter, target, terrain):
   
   effect.armor_part_hit = armor_part_hit
   
-  if shot_strength > target.armour_thickness[armor_part_hit]:
+  if shot_strength > target.type.armour_thickness[armor_part_hit]:
     effect.final_result = fire_outcome.DESTROYED
   else:
     effect.final_result = fire_outcome.INEFFECTIVE

@@ -14,7 +14,7 @@ func before_each():
   stub(mock_terrain, 'cell_to_world').to_return(Vector2(0, 0))
   units.terrain = mock_terrain
   
-  units.create_all_units(mock_terrain)
+  units.create_all_units()
   
   
 func test_count_remaining_units_of__red():
