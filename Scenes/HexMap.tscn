@@ -311,23 +311,6 @@ margin_top = 664.0
 margin_right = 216.0
 margin_bottom = 700.0
 
-[node name="HC" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/Admin"]
-margin_left = 3.0
-margin_top = 5.0
-margin_right = 213.0
-margin_bottom = 31.0
-
-[node name="Save" type="Button" parent="Interface/Camera/L/Sidebar/Admin/HC"]
-margin_right = 52.0
-margin_bottom = 26.0
-text = "Save"
-
-[node name="Load" type="Button" parent="Interface/Camera/L/Sidebar/Admin/HC"]
-margin_left = 56.0
-margin_right = 108.0
-margin_bottom = 26.0
-text = "Load"
-
 [node name="HC2" type="HBoxContainer" parent="Interface/Camera/L/Sidebar/Admin"]
 margin_left = 3.0
 margin_top = 5.0
