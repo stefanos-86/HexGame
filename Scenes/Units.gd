@@ -133,3 +133,10 @@ func clear_executed_fire_missions(player):
   for c in available_fire_support(player):
     if c.turns_to_fire == 0:
       c.cancel_fire_mission()
+
+func enemies_of(unit):
+  var enemies = []
+  for u in order_of_battle:
+    if u.faction != unit.faction:
+      enemies.append(u)
+  return enemies

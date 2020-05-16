@@ -26,6 +26,9 @@ func _ready():
   terrain = root.get_node("HexMap/Terrain")
   interface = root.get_node("HexMap/Interface")
 
+  units.reset_points_and_speed(game.factions.BLUE)
+  units.reset_points_and_speed(game.factions.RED)
+  
   game.begin_game()
   interface.refresh_turn_info(game)
   unselect_current_unit()
@@ -188,7 +191,10 @@ func move_unit(unit, destination):
 
 func reactivate_input():
   animation_in_progress = false
-
+  
+func block_input():
+  animation_in_progress = true
+  
 func shoot(attacker, target):
   if attacker.fire_points == 0:
     interface.no_fire_points()
@@ -200,7 +206,7 @@ func shoot(attacker, target):
     interface.out_of_range()
     return
   
-  animation_in_progress = true
+  block_input()
   
   # Save the target to be erased after the animation is completed-
   # Everything else is a parameter of the signals, but I could not find
@@ -213,9 +219,20 @@ func shoot(attacker, target):
   interface.animate_attack(attacker, target, attack_result)
   yield(interface, "attack_completed")
   
-  # TODO: return fire, if target survived or other units are looking at the action.
-  
   after_shoot()
+  
+  var opponents = units.enemies_of(attacker)
+  var counter_attacks = game.reaction_fire(attacker, target, terrain, opponents)
+  
+  for reaction in counter_attacks:
+    interface.animate_attack(reaction.shooter, attacker, reaction)
+    yield(interface, "attack_completed")
+    if reaction.final_result == game.fire_outcome.DESTROYED:
+      target_to_destroy = attacker
+    
+    after_shoot()
+    
+  reactivate_input()
   
 
 func after_shoot():
@@ -232,7 +249,6 @@ func after_shoot():
       
     target_to_destroy = null
   update_unit_list() # Reaction fire or artillery friendly fire, or end of ammo.
-  reactivate_input()
   
 
 func turn_towards(position):
@@ -241,15 +257,16 @@ func turn_towards(position):
     selected_unit.rotate_turret_towards(position)
 
 func next_turn():
+  block_input()
   artillery_plot_done()  # In case the window is still open!
   unselect_current_unit()
   game.next_turn()
-  update_unit_list()
   units.reset_points_and_speed(game.current_player)
   units.progress_fire_missions(game.current_player)
   interface.clear_action_descritpion()
   interface.clear_movement_plot()
   interface.refresh_turn_info(game)
+  update_unit_list()
   
   var artillery_effects = game.fire_artillery(units.ready_fire_missions(game.current_player), terrain)
   for outcome in artillery_effects:
@@ -260,7 +277,7 @@ func next_turn():
     after_shoot()
     
   units.clear_executed_fire_missions(game.current_player)
-  
+  reactivate_input()
 
 func plot_artillery():
   animation_in_progress = true # Block the input on the map.

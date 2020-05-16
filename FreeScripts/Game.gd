@@ -41,6 +41,7 @@ enum fire_stances {
 class FireEffect:
   var armor_part_hit = null
   var final_result = null
+  var shooter = null # Needed for reaction fire.
  
 class MoveEffect:
   var actual_path = null
@@ -96,6 +97,7 @@ func movement_accuracy_penalty(base_hit_probability, speed):
     
 func fire(shooter, target, terrain):
   var effect = FireEffect.new()
+  effect.shooter = shooter
   
   var distance = terrain.distance_between(shooter, target)
   
@@ -233,3 +235,30 @@ func fire_artillery(cannons, terrain):
     c.rounds_left -= 1
     
   return results
+
+static func by_move_points_desc (a, b):
+  return a.move_points > b.move_points # Reverse ordertrue
+
+func reaction_fire(against_this_unit, defender, terrain, opponents):
+  var reacting_enemies = []
+  for enemy in opponents:
+    
+    if enemy.move_points > against_this_unit.move_points and enemy.alive == true:
+      
+      if enemy == defender and enemy.fire_stance == fire_stances.RETURN_FIRE:
+        reacting_enemies.append(enemy.fire_stance)
+      
+      elif enemy.fire_stance == fire_stances.FIRE_AT_WILL:
+        reacting_enemies.append(enemy)
+  
+  reacting_enemies.sort_custom(self, "by_move_points_desc")       
+  
+  var reactions = []
+  for enemy in reacting_enemies:
+    var outcome = fire(enemy, against_this_unit, terrain)
+    reactions.append(outcome)
+    
+    if outcome.final_result == fire_outcome.DESTROYED:
+      break
+    
+  return reactions  
