@@ -37,3 +37,5 @@ func mark_destruction():
 func reset_points():
   move_points = max_move_points
   fire_points = max_fire_points
+  
+

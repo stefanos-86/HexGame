@@ -242,9 +242,9 @@ func after_shoot():
   if target_to_destroy != null:
     target_to_destroy.mark_destruction()
     interface.mark_destruction(target_to_destroy)
-    units.mark_destruction(target_to_destroy)
+    target_to_destroy.mark_destruction()
      
-    var enemies_left = units.count_units_of(target_to_destroy.faction)
+    var enemies_left = units.count_remaining_units_of(target_to_destroy.faction)
     if enemies_left == 0:
       animation_in_progress = true # Re-block input.
       interface.victory(game.current_player)
