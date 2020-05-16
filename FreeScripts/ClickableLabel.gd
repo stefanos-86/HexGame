@@ -9,7 +9,11 @@ signal label_clicked
 
 func _enter_tree():
     mouse_filter = MOUSE_FILTER_STOP
-    connect("gui_input", self, "handle_input")
+    var error = connect("gui_input", self, "handle_input")
+    
+    if error != 0:
+      print("Can I throw exceptions???")
+      get_tree().quit()
     
 func handle_input(event):
   if event is InputEventMouseButton:

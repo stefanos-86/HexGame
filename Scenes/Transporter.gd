@@ -1,39 +1,47 @@
 extends Node2D
 
+# This class moves object along a path.
+# Any time something moves on the map (for an animation)
+# this class takes it as a child and follows the animation path.
+
 signal transport_done
 
 var animation_speed
-var follow_me
+var path_to_follow
 
-var moving = false
 var path_length
-var moving_object
+var moving_object = null
 
 func _ready():
-  follow_me = get_parent()
+  path_to_follow = get_parent()
 
-func reset_at_start(distance_to_cover, speed, moving_obj):
-  follow_me.set_offset(0)
+
+func start_moving(distance_to_cover, speed, moving_obj):
   path_length = distance_to_cover
   animation_speed = speed
-  moving = true
   moving_object = moving_obj
+
+  path_to_follow.set_offset(0)
   
   moving_object.position = Vector2(0, 0)
   moving_object.set_rotation(0)
-  moving_object.set_visible(true)
+
   add_child(moving_object)
 
+
 func _physics_process(delta):
-  if not moving:
+  if moving_object == null:
    return
   
-  var new_offset = follow_me.get_offset () + animation_speed * delta  
+  var new_offset = path_to_follow.get_offset () + animation_speed * delta  
+  
   if (new_offset >= path_length):
-    new_offset = path_length
-    moving = false
+    new_offset = path_length # Do not overshoot!
+    
     remove_child(moving_object)
+    moving_object = null
+    
     emit_signal("transport_done")
     return
     
-  follow_me.set_offset(new_offset)
+  path_to_follow.set_offset(new_offset)

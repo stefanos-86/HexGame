@@ -60,7 +60,7 @@ func animate_movement(unit, move_effect):
   units.remove_child(unit)
   var transporter = $MovementPath/PathFollow2D/Transporter
 
-  transporter.reset_at_start(distance_to_cover, 120, unit)  
+  transporter.start_moving(distance_to_cover, 120, unit)  
   yield(transporter, "transport_done")
   
   describe_movement_effect(move_effect)
@@ -94,7 +94,8 @@ func animate_attack(attacker, target, outcome):
     
   var m = $Missile
   remove_child(m)
-  $MovementPath/PathFollow2D/Transporter.reset_at_start(distance_to_cover, 500, m)  
+  m.set_visible(true)
+  $MovementPath/PathFollow2D/Transporter.start_moving(distance_to_cover, 500, m)  
   yield($MovementPath/PathFollow2D/Transporter, "transport_done")
   
   var message = "Missed!"
