@@ -11,10 +11,7 @@ var interface
 var order_of_battle = []
 var artillery_support = []
 
-func _ready():
-  terrain = get_tree().get_root().get_node("HexMap/Terrain")
-  interface = get_tree().get_root().get_node("HexMap/Interface")
-
+func place_tank(owner, position, facing):
   # Stub the unit creation code. 
   var standard_armour = {}
   standard_armour[game.armor_part.FRONT] = 300
@@ -22,43 +19,36 @@ func _ready():
   standard_armour[game.armor_part.REAR] = 100
   
   var unit_to_place = tank_scene.instance()
-  unit_to_place.faction = game.factions.RED
+  unit_to_place.faction = owner
   unit_to_place.type = "Tank"
   unit_to_place.reset_points()
   unit_to_place.armour_thickness = standard_armour
   unit_to_place.movement_stance = game.movement_stances.GO_SLOW
   unit_to_place.fire_stance = game.fire_stances.FIRE_AT_WILL
   interface.unmark(unit_to_place) # Forces the color.
-  terrain.emplace(unit_to_place, Vector2(12, 3))
+  terrain.emplace(unit_to_place, position)
   
   order_of_battle.append(unit_to_place)
   add_child(unit_to_place)
   
-  unit_to_place = tank_scene.instance()
-  unit_to_place.faction = game.factions.RED
-  unit_to_place.type = "Tank 2"
-  unit_to_place.movement_stance = game.movement_stances.GO_SLOW
-  unit_to_place.fire_stance = game.fire_stances.FIRE_AT_WILL
-  unit_to_place.armour_thickness = standard_armour
-  unit_to_place.reset_points()
-  interface.unmark(unit_to_place) # Forces the color.
-  terrain.emplace(unit_to_place, Vector2(5, 3))
+  unit_to_place.look_at(terrain.cell_to_world(facing))
+  #unit_to_place.rotate_turret_towards(facing)
+
+func _ready():
+  terrain = get_tree().get_root().get_node("HexMap/Terrain")
+  interface = get_tree().get_root().get_node("HexMap/Interface")
+
+  place_tank(game.factions.RED, Vector2(7, 0), Vector2(9, 0))
+  place_tank(game.factions.RED, Vector2(7, 1), Vector2(9, 1))
+  place_tank(game.factions.RED, Vector2(7, 2), Vector2(9, 2))
   
-  order_of_battle.append(unit_to_place)
-  add_child(unit_to_place)
-  
-  unit_to_place = tank_scene.instance()
-  unit_to_place.type = "Tank"
-  unit_to_place.faction = game.factions.BLUE
-  unit_to_place.movement_stance = game.movement_stances.GO_SLOW
-  unit_to_place.fire_stance = game.fire_stances.FIRE_AT_WILL
-  unit_to_place.armour_thickness = standard_armour
-  interface.unmark(unit_to_place) # Forces the color.
-  terrain.emplace(unit_to_place, Vector2(15, 1))
-  
-  order_of_battle.append(unit_to_place)
-  add_child(unit_to_place)
-    
+  place_tank(game.factions.RED, Vector2(11, 7), Vector2(13, 7))
+  place_tank(game.factions.RED, Vector2(7, 7), Vector2(9, 7))
+  place_tank(game.factions.RED, Vector2(3, 7), Vector2(5, 7))
+ 
+  place_tank(game.factions.BLUE, Vector2(53, 0), Vector2(49, 0))
+  place_tank(game.factions.BLUE, Vector2(56, 2), Vector2(52, 2))
+  place_tank(game.factions.BLUE, Vector2(58, 7), Vector2(56, 7))  
   
   var cannon = Artillery.new()
   cannon.owner = game.factions.RED
