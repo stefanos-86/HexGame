@@ -7,7 +7,6 @@ var tank_scene = load("res://Units/Tank.tscn")
 var Artillery = preload("res://FreeScripts/Artillery.gd")
 
 var terrain
-var interface
 var order_of_battle = []
 var artillery_support = []
 
@@ -25,7 +24,6 @@ func place_tank(owner, position, facing):
   unit_to_place.armour_thickness = standard_armour
   unit_to_place.movement_stance = game.movement_stances.GO_SLOW
   unit_to_place.fire_stance = game.fire_stances.FIRE_AT_WILL
-  interface.unmark(unit_to_place) # Forces the color.
   terrain.emplace(unit_to_place, position)
   
   order_of_battle.append(unit_to_place)
@@ -36,8 +34,14 @@ func place_tank(owner, position, facing):
 
 func _ready():
   terrain = get_tree().get_root().get_node("HexMap/Terrain")
-  interface = get_tree().get_root().get_node("HexMap/Interface")
 
+  create_all_units(terrain)
+  
+
+func all_units():
+  return order_of_battle
+
+func create_all_units(terrain):
   place_tank(game.factions.RED, Vector2(7, 0), Vector2(9, 0))
   place_tank(game.factions.RED, Vector2(7, 1), Vector2(9, 1))
   place_tank(game.factions.RED, Vector2(7, 2), Vector2(9, 2))

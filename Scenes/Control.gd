@@ -29,6 +29,9 @@ func _ready():
   units.reset_points_and_speed(game.factions.BLUE)
   units.reset_points_and_speed(game.factions.RED)
   
+  for unit in units.all_units():
+    interface.unmark(unit)
+  
   game.begin_game()
   interface.refresh_turn_info(game)
   unselect_current_unit()

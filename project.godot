@@ -23,6 +23,10 @@ config/icon="res://icon.png"
 
 window/size/fullscreen=true
 
+[editor_plugins]
+
+enabled=PoolStringArray( "gut" )
+
 [input]
 
 ui_accept={
