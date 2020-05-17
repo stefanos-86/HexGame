@@ -319,8 +319,7 @@ func animate_artillery(effect):
   
   $Explosion/AnimationPlayer.play("ExplosionAnimation")
   yield($Explosion/AnimationPlayer, "animation_finished")
-  
-  return true
+
   
 func unit_list(list, control, selected_unit):
   var list_box = $Camera/L/Sidebar/UnitList/VB/SC/VB

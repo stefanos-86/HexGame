@@ -168,14 +168,18 @@ margin_top = 5.0
 margin_right = 213.0
 margin_bottom = 61.0
 
-[node name="FireStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+[node name="FireStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB" groups=[
+"input_to_block",
+]]
 margin_right = 210.0
 margin_bottom = 26.0
 text = "Fire at will"
 items = [ "Fire at will", null, false, 0, null, "Return fire", null, false, 1, null, "Hold fire", null, false, 2, null ]
 selected = 0
 
-[node name="MoveStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB"]
+[node name="MoveStance" type="OptionButton" parent="Interface/Camera/L/Sidebar/Stance/VB" groups=[
+"input_to_block",
+]]
 margin_top = 30.0
 margin_right = 210.0
 margin_bottom = 56.0
@@ -221,18 +225,24 @@ margin_left = 21.0
 margin_right = 189.0
 margin_bottom = 26.0
 
-[node name="Unselect" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB"]
+[node name="Unselect" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB" groups=[
+"input_to_block",
+]]
 margin_right = 92.0
 margin_bottom = 26.0
 text = "Deselect"
 
-[node name="Center" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB"]
+[node name="Center" type="Button" parent="Interface/Camera/L/Sidebar/UnitList/VB/CC/HB" groups=[
+"input_to_block",
+]]
 margin_left = 96.0
 margin_right = 168.0
 margin_bottom = 26.0
 text = "Center"
 
-[node name="Artillery" type="Button" parent="Interface/Camera/L/Sidebar"]
+[node name="Artillery" type="Button" parent="Interface/Camera/L/Sidebar" groups=[
+"input_to_block",
+]]
 margin_top = 504.0
 margin_right = 216.0
 margin_bottom = 530.0
@@ -240,7 +250,9 @@ hint_tooltip = "Call fire support - A "
 shortcut_in_tooltip = false
 text = "Artillery"
 
-[node name="TurnButton" type="Button" parent="Interface/Camera/L/Sidebar"]
+[node name="TurnButton" type="Button" parent="Interface/Camera/L/Sidebar" groups=[
+"input_to_block",
+]]
 margin_top = 534.0
 margin_right = 216.0
 margin_bottom = 560.0
@@ -264,27 +276,35 @@ margin_right = 204.0
 margin_bottom = 86.0
 columns = 2
 
-[node name="ZoomIn" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="ZoomIn" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_right = 93.0
 margin_bottom = 26.0
 hint_tooltip = "Numpad + / Mouse Wheel Up"
 text = "Zoom In"
 
-[node name="ZoomOut" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="ZoomOut" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_left = 97.0
 margin_right = 199.0
 margin_bottom = 26.0
 hint_tooltip = "Numpad - / Mouse Wheel Down"
 text = "Zoom Out"
 
-[node name="PanUp" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="PanUp" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_top = 30.0
 margin_right = 93.0
 margin_bottom = 56.0
 hint_tooltip = "Pan Up - W - Up arrow"
 text = "Pan Up"
 
-[node name="PanDown" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="PanDown" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_left = 97.0
 margin_top = 30.0
 margin_right = 199.0
@@ -292,14 +312,18 @@ margin_bottom = 56.0
 hint_tooltip = "Pan Down - S - Down arrow"
 text = "Pan Down"
 
-[node name="PanL" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="PanL" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_top = 60.0
 margin_right = 93.0
 margin_bottom = 86.0
 hint_tooltip = "Pan Left - A - Left arrow"
 text = "Pan Left"
 
-[node name="PanR" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC"]
+[node name="PanR" type="Button" parent="Interface/Camera/L/Sidebar/View/CC/GC" groups=[
+"input_to_block",
+]]
 margin_left = 97.0
 margin_top = 60.0
 margin_right = 199.0

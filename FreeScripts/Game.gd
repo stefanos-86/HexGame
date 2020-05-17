@@ -12,6 +12,7 @@ enum fire_outcome {
   MISS,
   INEFFECTIVE,
   OUT_OF_RANGE,
+  NO_FIRE_POINTS,
   DESTROYED
  }
 
@@ -42,6 +43,7 @@ class FireEffect:
   var armor_part_hit = null
   var final_result = null
   var shooter = null # Needed for reaction fire.
+  var target = null # Needed to destroy it.
  
 class MoveEffect:
   var actual_path = null
@@ -98,6 +100,11 @@ func movement_accuracy_penalty(base_hit_probability, speed):
 func fire(shooter, target, terrain):
   var effect = FireEffect.new()
   effect.shooter = shooter
+  effect.target = target
+  
+  if shooter.fire_points == 0:
+    effect.final_result = fire_outcome.NO_FIRE_POINTS
+    return effect
   
   var distance = terrain.distance_between(shooter, target)
   
@@ -120,6 +127,12 @@ func fire(shooter, target, terrain):
     attack_angle += TWO_PI
     
   var bearing = (attack_angle - target.global_rotation) / TWO_PI
+  print (bearing, " ", attack_angle, " ", target.global_rotation)
+  
+  #BUG! Il bearing non è tra 0 e 2 pi se l'attaccante spara verso destra
+  #(anogol o 0) e il difensore guarda verso sinistra (rotazione pari a PI.)
+  #Bisogna   rendere modulare!!!
+
 
   var p_hit_side = 0
   if (bearing < 0.25):
