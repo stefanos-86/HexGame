@@ -233,8 +233,15 @@ func shoot(attacker, target):
   var counter_attacks = game.reaction_fire(attacker, target, terrain, opponents)
   
   for reaction in counter_attacks:
+    if reaction.final_result == game.fire_outcome.NO_FIRE_POINTS:
+      continue
+    
+    if reaction.final_result == game.fire_outcome.OUT_OF_RANGE:
+      continue
+    
     interface.animate_attack(reaction.shooter, attacker, reaction)
     yield(interface, "attack_completed")
+    
     if reaction.final_result == game.fire_outcome.DESTROYED:
       unselect_current_unit() # The attacker must be the current unit.
     

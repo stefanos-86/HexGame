@@ -33,6 +33,7 @@ var colors_for_fire = {
   g.fire_outcome.MISS: Color(1, 0.4, 0.4),
   g.fire_outcome.INEFFECTIVE: color_for_warning,
   g.fire_outcome.OUT_OF_RANGE: color_for_warning,
+  g.fire_outcome.NO_FIRE_POINTS: color_for_warning,
   g.fire_outcome.DESTROYED: Color(0.4, 1, 0.4),
  }
 
@@ -99,7 +100,7 @@ func animate_attack(attacker, target, outcome):
   yield($MovementPath/PathFollow2D/Transporter, "transport_done")
   
   var message = "Missed!"
-  if outcome.final_result != g.fire_outcome.MISS:
+  if outcome.final_result == g.fire_outcome.DESTROYED or outcome.final_result == g.fire_outcome.INEFFECTIVE:
     var hit_name = g.armor_part.keys()[outcome.armor_part_hit]
     var result_name = g.fire_outcome.keys()[outcome.final_result]
     message = "{0} hit: {1}.".format([hit_name, result_name])
