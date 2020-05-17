@@ -93,19 +93,13 @@ func _unhandled_input(event):
 
 func activate_input():
   input_blocked = false
-  disable_widgets(false)
+  interface.disable_widgets(false)
   
   
 func block_input():
   input_blocked = true
-  disable_widgets(true)
+  interface.disable_widgets(true)
 
-   
-func disable_widgets(state):
-  var widgets = get_tree().get_nodes_in_group("input_to_block")
-  for w in widgets:
-    w.disabled = state
-  
   
 func clicked_cell():
   var corrected_mouse_position = get_global_mouse_position()
@@ -308,7 +302,7 @@ func cannon_targeting(cannon):
   selected_cannon = cannon
   interface.close_artillery_box()
   activate_input()
-  disable_widgets(true) # Allow only the mouse.
+  interface.disable_widgets(true) # Allow only the mouse.
 
 
 func artillery_plot_done():

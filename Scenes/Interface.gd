@@ -44,24 +44,19 @@ func _ready():
   rng.randomize()
   
   compute_pan_limits()
-  pan_up() # Ensure the camera gets re-positioned within the limits.
+  pan_up() # Ensure the camera gets re-positioned within the limits. Any movement would do.
 
 
 func get_action_label():
   return $Camera/L/Sidebar/Descriptions/VB/ActionResults
 
-func animate_movement(unit, move_effect):
-  $MovementPath.curve.clear_points()
-  for p in move_effect.actual_path:
-    var point_in_wc = terrain.cell_to_world(p)
-    $MovementPath.curve.add_point(point_in_wc)
-    
-  var distance_to_cover = $MovementPath.curve.get_baked_length()
-    
-  units.remove_child(unit)
-  var transporter = $MovementPath/PathFollow2D/Transporter
 
-  transporter.start_moving(distance_to_cover, 120, unit)  
+func animate_movement(unit, move_effect): 
+  units.remove_child(unit)
+
+  var transporter = $MovementPath/PathFollow2D/Transporter
+  var distance_to_cover = load_cells_in_movement_curve(move_effect.actual_path)
+  transporter.start_moving(distance_to_cover, 180, unit)  
   yield(transporter, "transport_done")
   
   describe_movement_effect(move_effect)
@@ -71,33 +66,37 @@ func animate_movement(unit, move_effect):
   unit.set_position($MovementPath/PathFollow2D.get_position());
   emit_signal("movement_completed")
   
+  
 func describe_movement_effect(move_effect):
   if move_effect.final_result == g.movement_outcome.NO_MOVE_POINTS:
     var action_label = get_action_label()
     action_label.modulate = color_for_warning
     action_label.text = "No move points!"
   
+  
+func load_cells_in_movement_curve(cells):
+  var curve = $MovementPath.curve
+  curve.clear_points()
+  for p in cells:
+    var point_in_wc = terrain.cell_to_world(p)
+    curve.add_point(point_in_wc)
+  return curve.get_baked_length()  
+  
+  
 func animate_attack(attacker, target, outcome):
   attacker.rotate_turret_towards(target.position)
   
-  $MovementPath.curve.clear_points()
+  var attack_from = terrain.where_is(attacker)
+  var attack_to = terrain.where_is(target)
+     
+  var missile = $Missile
+  remove_child(missile)
+  missile.set_visible(true)
   
-  var attack_from = terrain.cell_to_world(terrain.where_is(attacker))
-  var attack_to = terrain.cell_to_world(terrain.where_is(target))
-  
-  var imprecise = outcome.final_result == g.fire_outcome.MISS
-  prepare_explosion(attack_to, imprecise)
-  
-  $MovementPath.curve.add_point(attack_from)
-  $MovementPath.curve.add_point($Explosion.position)
-    
-  var distance_to_cover = $MovementPath.curve.get_baked_length()
-    
-  var m = $Missile
-  remove_child(m)
-  m.set_visible(true)
-  $MovementPath/PathFollow2D/Transporter.start_moving(distance_to_cover, 500, m)  
+  var distance_to_cover = load_cells_in_movement_curve([attack_from, attack_to])
+  $MovementPath/PathFollow2D/Transporter.start_moving(distance_to_cover, 800, missile)  
   yield($MovementPath/PathFollow2D/Transporter, "transport_done")
+  add_child(missile)
   
   var message = "Missed!"
   if outcome.final_result == g.fire_outcome.DESTROYED or outcome.final_result == g.fire_outcome.INEFFECTIVE:
@@ -109,10 +108,13 @@ func animate_attack(attacker, target, outcome):
   action_label.text = message
   action_label.modulate = colors_for_fire[outcome.final_result]
   
-  add_child(m)
+  var imprecise = outcome.final_result == g.fire_outcome.MISS
+  prepare_explosion(terrain.cell_to_world(attack_to), imprecise)
+  
   $Explosion/AnimationPlayer.play("ExplosionAnimation")
   yield($Explosion/AnimationPlayer, "animation_finished")
   emit_signal("attack_completed")
+  
   
 func prepare_explosion(wc_position, imprecise):
   $Explosion.position = wc_position
@@ -125,13 +127,16 @@ func prepare_explosion(wc_position, imprecise):
 func zoom_out():
   change_zoom(1.1)
  
+
 func zoom_in():
   change_zoom(0.9)
+  
   
 func change_zoom(multiplier):
   zoom_level *= multiplier
   zoom_level = clamp(zoom_level, min_zoom_level, max_zoom_level)
   $Camera.zoom = Vector2(zoom_level, zoom_level)  
+
 
 func pan_up():
   pan(0, -pan_step)
@@ -159,10 +164,12 @@ func pan(x, y):
   
   $Camera.position = future_position
   
+  
 func pan_to_cell(coordinate):
   var position = terrain.cell_to_world(coordinate)
   var movement = position - $Camera.position
   pan(movement.x, movement.y)
+  
   
 func compute_pan_limits():
   var map_extent = terrain.bounding_box 
@@ -173,6 +180,7 @@ func compute_pan_limits():
 
   cam_lim_bottom = Vector2(min_extent.x, min_extent.y)
   cam_lim_top = Vector2(max_extent.x + covered_by_sidebar, max_extent.y)
+
 
 func refresh_turn_info(game):
   var player = game.current_player_name()
@@ -190,10 +198,8 @@ func clear_movement_plot():
 func plot_movement(path):  
   clear_movement_plot()
   
-  var id = 0
   for point in path:
-    $PlannedPath.add_point(terrain.cell_to_world(point), id)
-    id += 1
+    $PlannedPath.add_point(terrain.cell_to_world(point))
 
 func put_cursor_at(map_coordinates):
   $CellCursor.position = terrain.cell_to_world(map_coordinates)
@@ -224,13 +230,16 @@ func describe_cell(map_coordinates, distance, hit_probability):
       
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = target_desc
   
+  
 func describe_cell_artillery(cell_coordinates, cannon):
   describe_terrain(cell_coordinates)
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = "Gun %d" % cannon.id
   
+  
 func mark_as_selected(unit):
   unit.get_node("Highlight").modulate =  color_for_highlight
   refresh_unit_description(unit)
+  
   
 func refresh_unit_description(unit):
   var unit_desc = "{0}, Moves {1}, shots {2}".format([unit.type.type_name, unit.move_points, unit.fire_points])
@@ -239,29 +248,32 @@ func refresh_unit_description(unit):
   $Camera/L/Sidebar/Stance/VB/FireStance.selected = unit.fire_stance
   $Camera/L/Sidebar/Stance/VB/MoveStance.selected = unit.movement_stance
   
-  
+
 func no_fire_points():
   var action_label = get_action_label()
   action_label.modulate = color_for_warning
   action_label.text = "No fire points!"
+  
   
 func out_of_range():
   var action_label = get_action_label()
   action_label.modulate = color_for_warning
   action_label.text = "Out of range!"
   
+  
 func unmark(unit):
-  # This must be dealth with by the unit itself: the color
-  # depends on the faction it belongs to!
   unit.get_node("Highlight").modulate = colors_for_factions[unit.faction]
   $Camera/L/Sidebar/Descriptions/VB/UnitDescription.text = ""
+  
   
 func clear_action_descritpion():
   get_action_label().text = ""
 
+
 func mark_destruction(unit):
   $Camera/L/Sidebar/Descriptions/VB/TargetDescription.text = ""
   unit.get_node("Highlight").modulate = color_for_destruction
+
 
 func victory(winner):
   var message = "Battle finished: %s victory." % g.factions.keys()[winner]
@@ -289,13 +301,16 @@ func show_artillery_box(cannons, control):
       ui_row.get_node("Cancel").connect("pressed", control, "cancel_fire_mission", [c])
     list.add_child(ui_row)
 
+
 func close_artillery_box():
   $Camera/L/ArtilleryBox.visible = false
+
 
 func delete_children(node):
   for n in node.get_children():
     node.remove_child(n)
     n.queue_free()
+
 
 func gun_label(cannon):
   var label = "Gun %d - " % cannon.id
@@ -308,6 +323,7 @@ func gun_label(cannon):
   
   # The last possible case is a fire mission ongoing.
   return label + " target at ({0}, {1}) in {2} turns.".format([cannon.target_coordinates.x, cannon.target_coordinates.y, cannon.turns_to_fire])
+
 
 func animate_artillery(effect):
   var position = terrain.cell_to_world(effect.actual_hit)
@@ -347,14 +363,21 @@ func unit_list(list, control, selected_unit):
      
     list_box.add_child(label)
 
+
 func allow_selected_unit_actions():
   $Camera/L/Sidebar/UnitList/VB/CC/HB/Center.disabled = false
   $Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect.disabled = false
   $Camera/L/Sidebar/Stance/VB/MoveStance.disabled = false
   $Camera/L/Sidebar/Stance/VB/FireStance.disabled = false
   
+  
 func disable_selected_unit_actions():
   $Camera/L/Sidebar/UnitList/VB/CC/HB/Center.disabled = true
   $Camera/L/Sidebar/UnitList/VB/CC/HB/Unselect.disabled = true
   $Camera/L/Sidebar/Stance/VB/MoveStance.disabled = true
   $Camera/L/Sidebar/Stance/VB/FireStance.disabled = true
+
+func disable_widgets(state):
+  var widgets = get_tree().get_nodes_in_group("input_to_block")
+  for w in widgets:
+    w.disabled = state
