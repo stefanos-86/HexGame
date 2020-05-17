@@ -52,8 +52,6 @@ func get_action_label():
 
 
 func animate_movement(unit, move_effect): 
-  units.remove_child(unit)
-
   var transporter = $MovementPath/PathFollow2D/Transporter
   var distance_to_cover = load_cells_in_movement_curve(move_effect.actual_path)
   transporter.start_moving(distance_to_cover, 180, unit)  
@@ -61,7 +59,6 @@ func animate_movement(unit, move_effect):
   
   describe_movement_effect(move_effect)
   
-  units.add_child(unit)
   unit.set_rotation($MovementPath/PathFollow2D.get_rotation());
   unit.set_position($MovementPath/PathFollow2D.get_position());
   emit_signal("movement_completed")
@@ -89,14 +86,11 @@ func animate_attack(attacker, target, outcome):
   var attack_from = terrain.where_is(attacker)
   var attack_to = terrain.where_is(target)
      
-  var missile = $Missile
-  remove_child(missile)
-  missile.set_visible(true)
+  $Missile.set_visible(true)
   
   var distance_to_cover = load_cells_in_movement_curve([attack_from, attack_to])
-  $MovementPath/PathFollow2D/Transporter.start_moving(distance_to_cover, 800, missile)  
+  $MovementPath/PathFollow2D/Transporter.start_moving(distance_to_cover, 800, $Missile)  
   yield($MovementPath/PathFollow2D/Transporter, "transport_done")
-  add_child(missile)
   
   var message = "Missed!"
   if outcome.final_result == g.fire_outcome.DESTROYED or outcome.final_result == g.fire_outcome.INEFFECTIVE:

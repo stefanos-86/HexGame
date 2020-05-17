@@ -11,6 +11,7 @@ var path_to_follow
 
 var path_length
 var moving_object = null
+var real_object_parent = null
 
 func _ready():
   path_to_follow = get_parent()
@@ -26,6 +27,8 @@ func start_moving(distance_to_cover, speed, moving_obj):
   moving_object.position = Vector2(0, 0)
   moving_object.set_rotation(0)
 
+  real_object_parent = moving_obj.get_parent()
+  real_object_parent.remove_child(moving_object)
   add_child(moving_object)
 
 
@@ -39,6 +42,7 @@ func _physics_process(delta):
     new_offset = path_length # Do not overshoot!
     
     remove_child(moving_object)
+    real_object_parent.add_child(moving_object)
     moving_object = null
     
     emit_signal("transport_done")
