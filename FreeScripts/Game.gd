@@ -1,3 +1,6 @@
+# This script has all the "simulation logic" to compute the outcomes
+# of movement and engagements. And the turn counting. It had to go somewhere...
+
 const TWO_PI = 2 * PI
 
 enum factions {RED, BLUE}
@@ -69,16 +72,19 @@ func begin_game():
   current_player = first_player_in_turn
   turn_count = 1
   
-func swap_player():
+func _swap_player():
   if (current_player == factions.RED):
     current_player = factions.BLUE
   else:
     current_player = factions.RED
-
-func next_turn():
-  swap_player()
+    
+func _increment_turn():
   if (current_player == first_player_in_turn):
     turn_count += 1
+
+func next_turn():
+  _swap_player()
+  _increment_turn()
   
 func hit_probability(attacker, target, distance):
   var p = 100
@@ -121,19 +127,29 @@ func fire(shooter, target, terrain):
     
   var shot_strength = distance_penalty(shooter.type.gun_penetration_power, distance, shooter.type.gun_max_range) 
   
+  # Try to figure out the angle at which the projectile is coming into
+  # the target, from the target point of view. First compute
+  # the direction of the bullet.
   var attack_direction = target.position - shooter.position
   var attack_angle = attack_direction.angle()
   if attack_angle < 0:
     attack_angle += TWO_PI
     
+  # Now rotate the incoming attack in the target coordinate system.
+  # The target "0" is its front, PI is it's back.
+  # Scale so that the angle is in [0, 1] rather than [0, 2*PI]
+  # (simplifies things after).
   var bearing = (attack_angle - target.global_rotation) / TWO_PI
-  print (bearing, " ", attack_angle, " ", target.global_rotation)
   
-  #BUG! Il bearing non è tra 0 e 2 pi se l'attaccante spara verso destra
-  #(anogol o 0) e il difensore guarda verso sinistra (rotazione pari a PI.)
-  #Bisogna   rendere modulare!!!
-
-
+  # The probability of hitting the side is 0 when looking head on
+  # of at the back, but goes to 1 when looking at the side.
+  #  ^
+  # 1|  /\    /\
+  #  | /  \  /  \
+  #  |/    \/    \
+  #  +--------------->
+  #  0  0.5 0.75  1  <== bearing values
+  #  0 PI/2 3PI/2 PI <== rads   
   var p_hit_side = 0
   if (bearing < 0.25):
     p_hit_side = lerp(0, 1, bearing * 4)
@@ -166,9 +182,9 @@ func distance_penalty(value_at_no_distance, distance, max_distance):
 
 
 # Walk the path one bit at a time and simulate things that can
-# happen when moving. Return a data structure that tells the results
+# happen along the way. Return a data structure that tells the results
 # of the movement, with the path actually travelled up to the available
-# move points and any engagement that may result along the way.
+# move points and (TODO) any ambush.
 func movement(unit, planned_path, terrain):
   if planned_path.size() < 1:
     var outcome = MoveEffect.new()
@@ -250,7 +266,7 @@ func fire_artillery(cannons, terrain):
   return results
 
 static func by_move_points_desc (a, b):
-  return a.move_points > b.move_points # Reverse ordertrue
+  return a.move_points > b.move_points # Reverse order!
 
 func reaction_fire(against_this_unit, defender, terrain, opponents):
   var reacting_enemies = []
@@ -272,6 +288,6 @@ func reaction_fire(against_this_unit, defender, terrain, opponents):
     reactions.append(outcome)
     
     if outcome.final_result == fire_outcome.DESTROYED:
-      break
+      break # Assume people won't fire again on a wrecked unit.
     
   return reactions  

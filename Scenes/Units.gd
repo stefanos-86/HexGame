@@ -77,8 +77,9 @@ func create_all_units():
   _place_tank(game.factions.BLUE, Vector2(58, 7), Vector2(56, 7))  
   
   # Activate those units to do quick tests of engagements.
-  _place_tank(game.factions.BLUE, Vector2(38, 2), Vector2(56, 7))  
-  _place_tank(game.factions.RED, Vector2(34, 2), Vector2(56, 7))  
+  # They are very close to each other.
+  #_place_tank(game.factions.BLUE, Vector2(38, 2), Vector2(56, 7))  
+  #_place_tank(game.factions.RED, Vector2(34, 2), Vector2(56, 7))  
   
   _create_cannon(game.factions.RED, 1)
   _create_cannon(game.factions.RED, 2)
