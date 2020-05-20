@@ -3,11 +3,11 @@
 ## What is this "game"
 It is a very simplified version of classic wargames played on a hexagonal map.
 
+![Gameplay image](https://github.com/stefanos-86/HexGame/blob/master/Screenshot.png "Looks like this")
+
 With this game you can move and fight the two armies on a map, in "hot seat" fashion, but there is not much to play with. No AI, no line of sight, very simple combat models, only one type of unit, no terrain elevation, no save game, no map editor or generator...
 
 If you want to see what a real wargame looks like, try a good classic: [Steel Panthers 2](https://devga.me/tutorials/godot2d/).
-
-![Gameplay image](https://github.com/stefanos-86/HexGame/blob/master/Screenshot.png "Looks like this")
 
 ## The real goal was to learn a game engine
 This "game" is my second project with the [Godot game engine](https://godotengine.org/).
