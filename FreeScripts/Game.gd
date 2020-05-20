@@ -88,15 +88,15 @@ func next_turn():
   
 func hit_probability(attacker, target, distance):
   var p = 100
-  p = movement_accuracy_penalty(p, attacker.speed)
-  p = movement_accuracy_penalty(p, target.speed)
-  p = distance_penalty(p, distance, attacker.type.gun_max_range)
+  p = _movement_accuracy_penalty(p, attacker.speed)
+  p = _movement_accuracy_penalty(p, target.speed)
+  p = _distance_penalty(p, distance, attacker.type.gun_max_range)
     
   # Account for size? For heading?
   
   return int(p)
 
-func movement_accuracy_penalty(base_hit_probability, speed):
+func _movement_accuracy_penalty(base_hit_probability, speed):
   if speed == speed_levels.SLOW:
     base_hit_probability /= 2
   elif speed == speed_levels.FAST:
@@ -125,7 +125,7 @@ func fire(shooter, target, terrain):
     effect.final_result = fire_outcome.MISS
     return effect
     
-  var shot_strength = distance_penalty(shooter.type.gun_penetration_power, distance, shooter.type.gun_max_range) 
+  var shot_strength = _distance_penalty(shooter.type.gun_penetration_power, distance, shooter.type.gun_max_range) 
   
   # Try to figure out the angle at which the projectile is coming into
   # the target, from the target point of view. First compute
@@ -139,17 +139,35 @@ func fire(shooter, target, terrain):
   # The target "0" is its front, PI is it's back.
   # Scale so that the angle is in [0, 1] rather than [0, 2*PI]
   # (simplifies things after).
-  var bearing = (attack_angle - target.global_rotation) / TWO_PI
+  var bearing = (attack_angle - target.global_rotation) / TWO_PI 
+  effect.armor_part_hit = _impact_point(bearing)
   
-  # The probability of hitting the side is 0 when looking head on
-  # of at the back, but goes to 1 when looking at the side.
-  #  ^
-  # 1|  /\    /\
-  #  | /  \  /  \
-  #  |/    \/    \
-  #  +--------------->
-  #  0  0.5 0.75  1  <== bearing values
-  #  0 PI/2 3PI/2 PI <== rads   
+  if shot_strength > target.type.armour_thickness[effect.armor_part_hit]:
+    effect.final_result = fire_outcome.DESTROYED
+  else:
+    effect.final_result = fire_outcome.INEFFECTIVE
+  
+  return effect
+
+# max_distance = range where the values goes to 0.
+# Hit probability decrease linearly with distance.
+func _distance_penalty(value_at_no_distance, distance, max_distance):
+  var distance_factor = clamp(float(distance) / max_distance, 0, 1)
+  return lerp(value_at_no_distance, 0, distance_factor)
+
+# The probability of hitting the side is 0 when looking head on
+# of at the back, but goes to 1 when looking at the side.
+#  ^
+# 1|  /\    /\
+#  | /  \  /  \
+#  |/    \/    \
+#  +--------------->
+#  0  0.5 0.75  1  <== bearing values
+#  0 PI/2 3PI/2 PI <== rads   
+# So, roll the dice to see if it is a side hit, given the
+# probability. If it is not, check the angle again to decide if
+# it is front or rear.
+func _impact_point(bearing):
   var p_hit_side = 0
   if (bearing < 0.25):
     p_hit_side = lerp(0, 1, bearing * 4)
@@ -166,20 +184,7 @@ func fire(shooter, target, terrain):
   elif bearing > 0.25 and bearing < 0.75:
     armor_part_hit = armor_part.FRONT
   
-  effect.armor_part_hit = armor_part_hit
-  
-  if shot_strength > target.type.armour_thickness[armor_part_hit]:
-    effect.final_result = fire_outcome.DESTROYED
-  else:
-    effect.final_result = fire_outcome.INEFFECTIVE
-  
-  return effect
-
-# max_distance = range where the values goes to 0.
-func distance_penalty(value_at_no_distance, distance, max_distance):
-  var distance_factor = clamp(float(distance) / max_distance, 0, 1)
-  return lerp(value_at_no_distance, 0, distance_factor)
-
+  return armor_part_hit
 
 # Walk the path one bit at a time and simulate things that can
 # happen along the way. Return a data structure that tells the results
