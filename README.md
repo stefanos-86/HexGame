@@ -7,6 +7,8 @@ With this game you can move and fight the two armies on a map, in "hot seat" fas
 
 If you want to see what a real wargame looks like, try a good classic: [Steel Panthers 2](https://devga.me/tutorials/godot2d/).
 
+![Gameplay image](https://github.com/stefanos-86/HexGame/blob/master/Screenshot.png "Looks like this")
+
 ## The real goal was to learn a game engine
 This "game" is my second project with the [Godot game engine](https://godotengine.org/).
 
