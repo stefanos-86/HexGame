@@ -16,6 +16,8 @@ Godot gives a lot of power in a very small package. The editor is fast, reliable
 
 But what matters the most to someone who codes as an hobby: Godot was fun to work with.
 
+Special thanks to the developers of [GUT](https://github.com/bitwes/Gut). There's a copy of it "embedded" in the repo, but that is because I did not have time to find a better way to manage the dependency.
+
 ## Careful!
 I tried to keep the code clean-ish, but I tested only parts of it. Quality was not a priority.
 
